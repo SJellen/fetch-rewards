@@ -1,7 +1,7 @@
 // SearchResults.tsx
 import React from "react";
 import Cards from "./Cards";
-
+import Favorites from "./Favorites";
 interface Dog {
   id: string;
   img: string;
@@ -22,6 +22,8 @@ interface SearchResultsProps {
   setCurrentPage: React.Dispatch<React.SetStateAction<number>>;
   sortOrder: string;
   handleSortToggle: () => void;
+  showFavorites: boolean;
+  setShowFavorites: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 const SearchResults: React.FC<SearchResultsProps> = ({
@@ -33,8 +35,9 @@ const SearchResults: React.FC<SearchResultsProps> = ({
   setCurrentPage,
   sortOrder,
   handleSortToggle,
+  showFavorites,
+  setShowFavorites,
 }) => {
-  console.log(currentPage);
   return (
     <div className="h-screen flex flex-col mt-12">
       {/*Add a No results message */}
@@ -44,6 +47,7 @@ const SearchResults: React.FC<SearchResultsProps> = ({
         </p>
       )}
       <Cards cards={cards} favorites={favorites} setFavorites={setFavorites} />
+      {showFavorites && <Favorites onClose={() => setShowFavorites(false)} />}
       {searchResults && (
         <div className="bg-black p-4 flex justify-between fixed bottom-0 w-full left-1/2 transform -translate-x-1/2">
           <div>

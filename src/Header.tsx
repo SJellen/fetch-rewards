@@ -21,7 +21,7 @@ export default function Header({
             Welcome, <span className="font-bold">{userName}</span>
           </span>
         )}
-        {isLoggedIn && (
+        {isLoggedIn && favorites.size > 0 && (
           <span
             role="button"
             className="hover:cursor-pointer hover:text-gray-300 text-[#ffdf02]"

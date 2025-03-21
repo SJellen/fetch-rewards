@@ -38,11 +38,10 @@ function App() {
   }, [favoritesSet]);
 
   const handleLoginSuccess = (username: string) => {
-    // console.log("Username:", username);
     setIsLoggedIn(true);
     setUserName(username);
     localStorage.setItem("isLoggedIn", "true");
-    // localStorage.setItem("userName", username);
+    localStorage.setItem("userName", username);
   };
 
   const handleLogout = () => {
@@ -82,29 +81,27 @@ function App() {
 
       <div className="mt-10 h-screen">
         {isLoggedIn ? (
-          showFavorites ? (
-            <Favorites />
-          ) : (
-            <Search
-              isLoggedIn={isLoggedIn}
-              favorites={favoritesSet}
-              setFavorites={setFavoritesSet}
-              setSearchResults={setSearchResults}
-              searchResults={searchResults}
-              currentPage={currentPage}
-              setCurrentPage={setCurrentPage}
-              setSortOrder={setSortOrder}
-              sortOrder={sortOrder}
-              breeds={breeds}
-              setBreeds={setBreeds}
-              breedFilter={breedFilter}
-              setBreedFilter={setBreedFilter}
-              minAge={minAge ?? 1}
-              maxAge={maxAge ?? 99}
-              setMinAge={setMinAge}
-              setMaxAge={setMaxAge}
-            />
-          )
+          <Search
+            isLoggedIn={isLoggedIn}
+            favorites={favoritesSet}
+            setFavorites={setFavoritesSet}
+            setSearchResults={setSearchResults}
+            searchResults={searchResults}
+            currentPage={currentPage}
+            setCurrentPage={setCurrentPage}
+            setSortOrder={setSortOrder}
+            sortOrder={sortOrder}
+            breeds={breeds}
+            setBreeds={setBreeds}
+            breedFilter={breedFilter}
+            setBreedFilter={setBreedFilter}
+            minAge={minAge ?? 1}
+            maxAge={maxAge ?? 99}
+            setMinAge={setMinAge}
+            setMaxAge={setMaxAge}
+            showFavorites={showFavorites}
+            setShowFavorites={setShowFavorites}
+          />
         ) : (
           <div className="mx-auto p-8 mt-10 text-[#510359] text-center h-auto flex flex-col items-center">
             <h1 className="text-2xl font-bold">{getGreeting()}</h1>
@@ -114,7 +111,6 @@ function App() {
             <Login
               onLoginSuccess={handleLoginSuccess}
               setFavorites={setFavoritesSet}
-              // favorites={favoritesSet}
             />
           </div>
         )}

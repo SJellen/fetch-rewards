@@ -14,7 +14,7 @@ export default function Login({ onLoginSuccess, setFavorites,
   const [error, setError] = useState("");
   const [credentials, setCredentials] = useState({ name: "", email: "" });
   const [isLoggedIn, setIsLoggedIn] = useLocalStorage("isLoggedIn", false);
-  const [userName, setUserName] = useState("");
+  const [userName, setUserName] = useLocalStorage("userName", "");
 
   const handleSubmit = async (
     e: React.FormEvent<HTMLFormElement>

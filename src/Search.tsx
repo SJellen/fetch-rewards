@@ -22,6 +22,8 @@ interface SearchProps {
   maxAge?: number;
   setMinAge: React.Dispatch<React.SetStateAction<number | undefined>>;
   setMaxAge: React.Dispatch<React.SetStateAction<number | undefined>>;
+  showFavorites: boolean;
+  setShowFavorites: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 const Search = ({
@@ -42,6 +44,8 @@ const Search = ({
   maxAge,
   setMinAge,
   setMaxAge,
+  showFavorites,
+  setShowFavorites,
 }: SearchProps) => {
   const [cards, setCards] = useState<Dog[]>([]);
   const [selectedZipCodes, setSelectedZipCodes] = useState<string[]>([]);
@@ -92,9 +96,6 @@ const Search = ({
     },
     [sortOrder, selectedZipCodes, fetchCardData, setSearchResults] 
   );
-  
-  
-  
 
   // Handle search submission
   const handleSearch = (breed?: string | null, minAge?: number, maxAge?: number) => {
@@ -102,20 +103,12 @@ const Search = ({
     fetchSearchResults(1, minAge ?? 0, maxAge ?? undefined, breed ?? null);
   };
 
-  // Trigger search when breed is selected
-  // const handleBreedChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-  //   const selectedBreed = e.target.value || null;
-  //   setBreedFilter(selectedBreed);
-  //   handleSearch(selectedBreed, minAge, maxAge);
-  // };
-
   // Fetch initial data when the user logs in
   useEffect(() => {
     if (!isLoggedIn || initialFetchDone) return;
 
     const fetchInitialData = async () => {
       try {
-        
         setBreeds(await api.getBreeds());
       } catch (error) {
         console.error("Error fetching breeds:", error);
@@ -149,8 +142,6 @@ const Search = ({
         breeds={breeds}
         breedFilter={breedFilter}
         setBreedFilter={setBreedFilter}
-        // sortOrder={sortOrder}
-        // setSortOrder={setSortOrder}
         handleSearch={() => handleSearch(breedFilter, minAge, maxAge)}
         selectedLocations={selectedZipCodes}
         setSelectedLocations={setSelectedZipCodes}
@@ -160,7 +151,6 @@ const Search = ({
         maxAge={maxAge ?? undefined}
         setMinAge={setMinAge}
         setMaxAge={setMaxAge}
-        // handleBreedChange={handleBreedChange} // ✅ Added for immediate search on breed selection
       />
 
       <div className="h-screen flex flex-col">
@@ -173,9 +163,9 @@ const Search = ({
           setCurrentPage={setCurrentPage}
           sortOrder={sortOrder}
           handleSortToggle={handleSortToggle}
+          showFavorites={showFavorites}
+          setShowFavorites={setShowFavorites}
         />
-
-    
       </div>
     </div>
   );
