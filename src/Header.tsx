@@ -21,10 +21,12 @@ export default function Header({
             Welcome, <span className="font-bold">{userName}</span>
           </span>
         )}
-        {isLoggedIn && favorites.size > 0 && (
+        {isLoggedIn && (
           <span
             role="button"
-            className="hover:cursor-pointer hover:text-gray-300 text-[#ffdf02]"
+            className={`hover:cursor-pointer hover:text-gray-300 ${
+              favorites.size > 0 ? "text-[#ffdf02]" : "text-gray-400"
+            }`}
             onClick={handleFavoritesClick}
           >
             Favorites ({favorites.size})

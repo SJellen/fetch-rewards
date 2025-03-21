@@ -40,15 +40,25 @@ const SearchResults: React.FC<SearchResultsProps> = ({
 }) => {
   return (
     <div className="h-screen flex flex-col mt-12">
-      {/*Add a No results message */}
-      {cards.length === 0 && (
-        <p className="text-black mt-24">
-          No dogs found. Try adjusting your search criteria.
-        </p>
+      {!showFavorites && (
+        <>
+          {/*Add a No results message */}
+          {cards.length === 0 && (
+            <p className="text-black mt-24">
+              No dogs found. Try adjusting your search criteria.
+            </p>
+          )}
+          <Cards cards={cards} favorites={favorites} setFavorites={setFavorites} />
+        </>
       )}
-      <Cards cards={cards} favorites={favorites} setFavorites={setFavorites} />
-      {showFavorites && <Favorites onClose={() => setShowFavorites(false)} />}
-      {searchResults && (
+      {showFavorites && (
+        <Favorites 
+          onClose={() => setShowFavorites(false)} 
+          favorites={favorites}
+          setFavorites={setFavorites}
+        />
+      )}
+      {searchResults && !showFavorites && (
         <div className="bg-black p-4 flex justify-between fixed bottom-0 w-full left-1/2 transform -translate-x-1/2">
           <div>
             <button

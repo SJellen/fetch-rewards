@@ -4,15 +4,15 @@ import "./App.css";
 import Search from "./Search";
 import Header from "./Header";
 import Favorites from "./Favorites";
-// import useLocalStorage from "./hooks/useLocalStorage";
+import useFavorites from "./hooks/useFavorites";
 import { SearchResult } from "./api/types";
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userName, setUserName] = useState<string | null>(null);
   const [showFavorites, setShowFavorites] = useState(false);
+  const { favorites, setFavorites } = useFavorites();
 
-  const [favoritesSet, setFavoritesSet] = useState<Set<string>>(new Set());
   const [searchResults, setSearchResults] = useState<SearchResult | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [sortOrder, setSortOrder] = useState("asc");
@@ -24,18 +24,10 @@ function App() {
   useEffect(() => {
     const storedLoginState = localStorage.getItem("isLoggedIn") === "true";
     const storedUserName = localStorage.getItem("userName") || "";
-    const storedFavorites = JSON.parse(
-      localStorage.getItem("favorites") || "[]"
-    );
 
     setIsLoggedIn(storedLoginState);
     setUserName(() => storedUserName);
-    setFavoritesSet(new Set(storedFavorites));
   }, [setUserName]);
-
-  useEffect(() => {
-    localStorage.setItem("favorites", JSON.stringify(Array.from(favoritesSet)));
-  }, [favoritesSet]);
 
   const handleLoginSuccess = (username: string) => {
     setIsLoggedIn(true);
@@ -47,10 +39,8 @@ function App() {
   const handleLogout = () => {
     setIsLoggedIn(false);
     setUserName("");
-    setFavoritesSet(new Set());
     localStorage.removeItem("isLoggedIn");
     localStorage.removeItem("userName");
-    localStorage.removeItem("favorites");
 
     if (searchResults !== null) {
       setSearchResults(null);
@@ -72,7 +62,7 @@ function App() {
     <div className="flex flex-col justify-center items-center w-screen max-w-9xl h-auto">
       <Header
         isLoggedIn={isLoggedIn}
-        favorites={favoritesSet}
+        favorites={favorites}
         setSearchResults={setSearchResults}
         handleFavoritesClick={handleFavoritesClick}
         userName={userName}
@@ -83,8 +73,8 @@ function App() {
         {isLoggedIn ? (
           <Search
             isLoggedIn={isLoggedIn}
-            favorites={favoritesSet}
-            setFavorites={setFavoritesSet}
+            favorites={favorites}
+            setFavorites={setFavorites}
             setSearchResults={setSearchResults}
             searchResults={searchResults}
             currentPage={currentPage}
@@ -110,7 +100,7 @@ function App() {
             </p>
             <Login
               onLoginSuccess={handleLoginSuccess}
-              setFavorites={setFavoritesSet}
+              setFavorites={setFavorites}
             />
           </div>
         )}

@@ -33,17 +33,9 @@ export default function Login({ onLoginSuccess, setFavorites,
         throw new Error(errorText);
       }
   
-      // Retrieve stored favorites after login
-      const storedFavorites = localStorage.getItem("favorites");
-      const initialFavorites = storedFavorites
-        ? new Set<string>(JSON.parse(storedFavorites))
-        : new Set<string>();
-  
       // Update state and localStorage
-      setFavorites(initialFavorites);
       setIsLoggedIn(true);
       setUserName(credentials.name);
-      // console.log("Login successful:", credentials.name);
       onLoginSuccess(credentials.name);
     } catch (error) {
       console.error("Error during login:", error);
