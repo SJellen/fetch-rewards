@@ -5,7 +5,15 @@ function useLocalStorage<T>(key: string, initialValue: T) {
     try {
       const item = window.localStorage.getItem(key);
       console.log(`Retrieving value from local storage: ${item}`);
-      return item ? (JSON.parse(item) as T) : initialValue;
+      if (!item) return initialValue;
+      
+      const parsed = JSON.parse(item);
+      // Handle Set type specifically
+      if (initialValue instanceof Set) {
+        console.log('Reconstructing Set from:', parsed);
+        return new Set(parsed) as T;
+      }
+      return parsed as T;
     } catch (error) {
       console.error("Error reading from localStorage", error);
       return initialValue;
@@ -14,10 +22,16 @@ function useLocalStorage<T>(key: string, initialValue: T) {
 
   const setValue = (value: T | ((val: T) => T)) => {
     try {
-      console.log(`Serializing value to store in local storage: ${value}`);
       const valueToStore = value instanceof Function ? value(storedValue) : value;
       setStoredValue(valueToStore);
-      window.localStorage.setItem(key, JSON.stringify(valueToStore));
+      
+      // Handle Set type specifically
+      const valueToSave = valueToStore instanceof Set 
+        ? Array.from(valueToStore)
+        : valueToStore;
+      
+      console.log('Saving to localStorage:', valueToSave);
+      window.localStorage.setItem(key, JSON.stringify(valueToSave));
     } catch (error) {
       console.error("Error writing to localStorage", error);
     }

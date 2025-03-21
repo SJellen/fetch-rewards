@@ -60,7 +60,7 @@ const api = {
   },
 
   getBreeds: async () => {
-    return fetchWithRetry(`${API_URL}/dogs/breeds`, {
+    return fetchWithRetry<string[]>(`${API_URL}/dogs/breeds`, {
       method: "GET",
       credentials: "include",
     });

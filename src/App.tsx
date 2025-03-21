@@ -3,12 +3,14 @@ import Login from "./Login";
 import "./App.css";
 import Search from "./Search";
 import Header from "./Header";
+import Favorites from "./Favorites";
 // import useLocalStorage from "./hooks/useLocalStorage";
 import { SearchResult } from "./api/types";
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userName, setUserName] = useState<string | null>(null);
+  const [showFavorites, setShowFavorites] = useState(false);
 
   const [favoritesSet, setFavoritesSet] = useState<Set<string>>(new Set());
   const [searchResults, setSearchResults] = useState<SearchResult | null>(null);
@@ -64,12 +66,7 @@ function App() {
   };
 
   const handleFavoritesClick = () => {
-    if (favoritesSet.size > 0) {
-      setSearchResults({
-        resultIds: Array.from(favoritesSet),
-        total: favoritesSet.size,
-      });
-    }
+    setShowFavorites(!showFavorites);
   };
 
   return (
@@ -85,25 +82,29 @@ function App() {
 
       <div className="mt-10 h-screen">
         {isLoggedIn ? (
-          <Search
-            isLoggedIn={isLoggedIn}
-            favorites={favoritesSet}
-            setFavorites={setFavoritesSet}
-            setSearchResults={setSearchResults}
-            searchResults={searchResults}
-            currentPage={currentPage}
-            setCurrentPage={setCurrentPage}
-            setSortOrder={setSortOrder}
-            sortOrder={sortOrder}
-            breeds={breeds}
-            setBreeds={setBreeds}
-            breedFilter={breedFilter}
-            setBreedFilter={setBreedFilter}
-            minAge={minAge ?? 1}
-            maxAge={maxAge ?? 99}
-            setMinAge={setMinAge}
-            setMaxAge={setMaxAge}
-          />
+          showFavorites ? (
+            <Favorites />
+          ) : (
+            <Search
+              isLoggedIn={isLoggedIn}
+              favorites={favoritesSet}
+              setFavorites={setFavoritesSet}
+              setSearchResults={setSearchResults}
+              searchResults={searchResults}
+              currentPage={currentPage}
+              setCurrentPage={setCurrentPage}
+              setSortOrder={setSortOrder}
+              sortOrder={sortOrder}
+              breeds={breeds}
+              setBreeds={setBreeds}
+              breedFilter={breedFilter}
+              setBreedFilter={setBreedFilter}
+              minAge={minAge ?? 1}
+              maxAge={maxAge ?? 99}
+              setMinAge={setMinAge}
+              setMaxAge={setMaxAge}
+            />
+          )
         ) : (
           <div className="mx-auto p-8 mt-10 text-[#510359] text-center h-auto flex flex-col items-center">
             <h1 className="text-2xl font-bold">{getGreeting()}</h1>
