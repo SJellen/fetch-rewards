@@ -32,6 +32,9 @@ const SearchForm: React.FC<SearchFormProps> = ({
 }) => {
   const [showFilters, setShowFilters] = useState(false);
   const [zipCodes, setZipCodes] = useState<string[]>([]);
+  const [localMinAge, setLocalMinAge] = useState<number | undefined>(minAge);
+  const [localMaxAge, setLocalMaxAge] = useState<number | undefined>(maxAge);
+  const [localSelectedLocations, setLocalSelectedLocations] = useState<string[]>(selectedLocations);
 
   const initialFiltersRef = useRef<{ zipCodes: string[]; minAge?: number; maxAge?: number } | null>(null);
 
@@ -55,40 +58,29 @@ const SearchForm: React.FC<SearchFormProps> = ({
 
   const handleBreedChange = (e: ChangeEvent<HTMLSelectElement>) => {
     const selectedBreed = e.target.value || null;
-    setMinAge(undefined);
-    setMaxAge(undefined);
-    setSelectedLocations([]);
     setBreedFilter(selectedBreed);
+    handleSearch(undefined, undefined, selectedBreed ?? undefined);
   };
 
-  useEffect(() => {
-    if (breedFilter !== null) {
-      handleSearch(undefined, undefined, breedFilter);
-    }
-  }, [breedFilter, handleSearch]);
-
   const handleZipCodeChange = (e: ChangeEvent<HTMLInputElement>, zipCode: string) => {
-    setSelectedLocations((prev) =>
-      e.target.checked ? [...prev, zipCode] : prev.filter((loc) => loc !== zipCode)
-    );
+    const newLocations = e.target.checked 
+      ? [...localSelectedLocations, zipCode] 
+      : localSelectedLocations.filter((loc) => loc !== zipCode);
+    setLocalSelectedLocations(newLocations);
   };
 
   const applyFilters = () => {
-    const filtered = cards.filter(
-      (dog) =>
-        (!minAge || dog.age >= minAge) &&
-        (!maxAge || dog.age <= maxAge) &&
-        (selectedLocations.length === 0 || selectedLocations.includes(dog.zip_code))
-    );
-
-    setFilteredCards(filtered);
+    setSelectedLocations(localSelectedLocations);
+    setMinAge(localMinAge);
+    setMaxAge(localMaxAge);
+    handleSearch(localMinAge, localMaxAge, breedFilter ?? undefined);
     setShowFilters(false);
   };
 
   const handleSearchClick = useCallback(
     (e: React.FormEvent) => {
       e.preventDefault();
-      handleSearch(minAge ?? 1, maxAge ?? 20, breedFilter ?? "");
+      handleSearch(minAge ?? 1, maxAge ?? 20, breedFilter ?? undefined);
     },
     [handleSearch, minAge, maxAge, breedFilter]
   );
@@ -98,6 +90,14 @@ const SearchForm: React.FC<SearchFormProps> = ({
       setSelectedLocations(initialFiltersRef.current.zipCodes);
       setMinAge(initialFiltersRef.current.minAge);
       setMaxAge(initialFiltersRef.current.maxAge);
+      setLocalSelectedLocations(initialFiltersRef.current.zipCodes);
+      setLocalMinAge(initialFiltersRef.current.minAge);
+      setLocalMaxAge(initialFiltersRef.current.maxAge);
+      handleSearch(
+        initialFiltersRef.current.minAge,
+        initialFiltersRef.current.maxAge,
+        breedFilter ?? undefined
+      );
     }
   };
 
@@ -125,7 +125,7 @@ const SearchForm: React.FC<SearchFormProps> = ({
                   <input
                     type="checkbox"
                     value={zipCode}
-                    checked={selectedLocations.includes(zipCode)}
+                    checked={localSelectedLocations.includes(zipCode)}
                     onChange={(e) => handleZipCodeChange(e, zipCode)}
                     className="mr-2"
                   />
@@ -137,17 +137,17 @@ const SearchForm: React.FC<SearchFormProps> = ({
               <input
                 type="number"
                 name="ageMin"
-                placeholder={minAge?.toString() || ""}
-                value={minAge}
-                onChange={(e) => setMinAge(Math.max(1, Math.min(parseInt(e.target.value) || 1, maxAge as number)))}
+                placeholder={localMinAge?.toString() || ""}
+                value={localMinAge}
+                onChange={(e) => setLocalMinAge(Math.max(1, Math.min(parseInt(e.target.value) || 1, localMaxAge as number)))}
                 className="p-2 rounded border w-full bg-gray-800 text-white"
               />
               <input
                 type="number"
                 name="ageMax"
-                placeholder={maxAge?.toString() || ""}
-                value={maxAge}
-                onChange={(e) => setMaxAge(Math.max(minAge as number, Math.min(parseInt(e.target.value) || (maxAge as number), maxAge as number)))}
+                placeholder={localMaxAge?.toString() || ""}
+                value={localMaxAge}
+                onChange={(e) => setLocalMaxAge(Math.max(localMinAge as number, Math.min(parseInt(e.target.value) || (localMaxAge as number), localMaxAge as number)))}
                 className="p-2 rounded border w-full bg-gray-800 text-white mt-2"
               />
 

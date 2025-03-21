@@ -51,6 +51,7 @@ const Search = ({
   const [selectedZipCodes, setSelectedZipCodes] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
   const [initialFetchDone, setInitialFetchDone] = useState(false);
+  const [shouldFetch, setShouldFetch] = useState(false);
 
   const fetchCardData = useCallback(async (ids: string[]) => {
     try {
@@ -71,7 +72,6 @@ const Search = ({
           size: 25,
           from: (page - 1) * 25,
           sort: `name:${sortOrder}`,
-          ...(selectedZipCodes.length ? { zipCodes: selectedZipCodes } : {}),
           ...(breed ? { breeds: [breed] } : {}),
           ...(ageMin !== undefined ? { ageMin } : {}),
           ...(ageMax !== undefined ? { ageMax } : {}),
@@ -92,16 +92,24 @@ const Search = ({
         console.error("🚨 Error fetching search results:", error);
       } finally {
         setLoading(false);
+        setShouldFetch(false);
       }
     },
-    [sortOrder, selectedZipCodes, fetchCardData, setSearchResults] 
+    [sortOrder, fetchCardData, setSearchResults, loading] 
   );
 
   // Handle search submission
   const handleSearch = (breed?: string | null, minAge?: number, maxAge?: number) => {
     setCurrentPage(1);
-    fetchSearchResults(1, minAge ?? 0, maxAge ?? undefined, breed ?? null);
+    setShouldFetch(true);
   };
+
+  // Fetch new results when dependencies change
+  useEffect(() => {
+    if (shouldFetch) {
+      fetchSearchResults(currentPage, minAge, maxAge, breedFilter);
+    }
+  }, [currentPage, sortOrder, selectedZipCodes, breedFilter, minAge, maxAge, fetchSearchResults, shouldFetch]);
 
   // Fetch initial data when the user logs in
   useEffect(() => {
@@ -133,7 +141,7 @@ const Search = ({
   const handleSortToggle = () => {
     setSortOrder(sortOrder === "asc" ? "desc" : "asc");
     setCurrentPage(1);
-    fetchSearchResults(1, minAge, maxAge, breedFilter);
+    setShouldFetch(true);
   };
 
   return (
@@ -165,6 +173,7 @@ const Search = ({
           handleSortToggle={handleSortToggle}
           showFavorites={showFavorites}
           setShowFavorites={setShowFavorites}
+          setShouldFetch={setShouldFetch}
         />
       </div>
     </div>

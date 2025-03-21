@@ -24,6 +24,7 @@ interface SearchResultsProps {
   handleSortToggle: () => void;
   showFavorites: boolean;
   setShowFavorites: React.Dispatch<React.SetStateAction<boolean>>;
+  setShouldFetch: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 const SearchResults: React.FC<SearchResultsProps> = ({
@@ -37,15 +38,18 @@ const SearchResults: React.FC<SearchResultsProps> = ({
   handleSortToggle,
   showFavorites,
   setShowFavorites,
+  setShouldFetch,
 }) => {
   return (
     <div className="h-screen flex flex-col mt-12">
       {!showFavorites && (
         <>
-          {/*Add a No results message */}
           {cards.length === 0 && (
             <p className="text-black mt-24">
-              No dogs found. Try adjusting your search criteria.
+              {searchResults === null 
+                ? "Welcome! Please select a breed to start your search."
+                : "No dogs found. Try adjusting your search criteria."
+              }
             </p>
           )}
           <Cards cards={cards} favorites={favorites} setFavorites={setFavorites} />
@@ -62,20 +66,24 @@ const SearchResults: React.FC<SearchResultsProps> = ({
         <div className="bg-black p-4 flex justify-between fixed bottom-0 w-full left-1/2 transform -translate-x-1/2">
           <div>
             <button
-              onClick={() => setCurrentPage((page) => Math.max(1, page - 1))}
+              onClick={() => {
+                setCurrentPage((page) => Math.max(1, page - 1));
+                setShouldFetch(true);
+              }}
               disabled={currentPage <= 1}
             >
               Previous
             </button>
             <span>Page {currentPage}</span>
             <button
-              onClick={() =>
+              onClick={() => {
                 setCurrentPage((page) =>
                   searchResults && page * 25 < searchResults.total
                     ? page + 1
                     : page
-                )
-              }
+                );
+                setShouldFetch(true);
+              }}
             >
               Next
             </button>
