@@ -71,7 +71,7 @@ const Search = ({
         const params: SearchParams = {
           size: 25,
           from: (page - 1) * 25,
-          sort: `name:${sortOrder}`,
+          sort: sortOrder,
           ...(breed ? { breeds: [breed] } : {}),
           ...(ageMin !== undefined ? { ageMin } : {}),
           ...(ageMax !== undefined ? { ageMax } : {}),

@@ -71,10 +71,11 @@ const SearchResults: React.FC<SearchResultsProps> = ({
                 setShouldFetch(true);
               }}
               disabled={currentPage <= 1}
+              className={`${currentPage <= 1 ? 'opacity-50 cursor-not-allowed' : ''}`}
             >
               Previous
             </button>
-            <span>Page {currentPage}</span>
+            <span className="mx-4">Page {currentPage}</span>
             <button
               onClick={() => {
                 setCurrentPage((page) =>
@@ -84,13 +85,15 @@ const SearchResults: React.FC<SearchResultsProps> = ({
                 );
                 setShouldFetch(true);
               }}
+              disabled={currentPage * 25 >= searchResults.total}
+              className={`${currentPage * 25 >= searchResults.total ? 'opacity-50 cursor-not-allowed' : ''}`}
             >
               Next
             </button>
           </div>
 
           <button onClick={handleSortToggle}>
-            {sortOrder === "asc" ? "Descending" : "Ascending"}
+            Sort: {sortOrder === "asc" ? "A to Z" : "Z to A"}
           </button>
         </div>
       )}
