@@ -1,3 +1,5 @@
+import { Coordinates, LocationSearchParams, LocationSearchResult } from "./types";
+
 // import { Coordinates } from "./types";
 
 export const API_URL = "https://frontend-take-home-service.fetch.com";
@@ -114,18 +116,36 @@ const api = {
     });
   },
 
-  searchLocations: async (params: {
-    city?: string;
-    states?: string[];
-    size?: number;
-    from?: number;
-  }) => {
-    return fetchWithRetry(`${API_URL}/locations/search`, {
+  searchLocations: async (params: LocationSearchParams) => {
+    return fetchWithRetry<LocationSearchResult>(`${API_URL}/locations/search`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
+      credentials: "include",
       body: JSON.stringify(params),
+    });
+  },
+
+  getLocations: async (zipCodes: string[]) => {
+    return fetchWithRetry<Location[]>(`${API_URL}/locations`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      credentials: "include",
+      body: JSON.stringify(zipCodes),
+    });
+  },
+
+  matchDogs: async (dogIds: string[]) => {
+    return fetchWithRetry<{ match: string }>(`${API_URL}/dogs/match`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      credentials: "include",
+      body: JSON.stringify(dogIds),
     });
   },
 };

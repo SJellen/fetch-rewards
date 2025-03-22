@@ -2,7 +2,8 @@ import { useState, useEffect, useCallback } from "react";
 import api from "./api/api";
 import SearchForm from "./SearchForm";
 import SearchResults from "./SearchResults";
-import { Dog, SearchResult, SearchParams } from "./api/types";
+import LocationFilter from "./components/LocationFilter";
+import { Dog, SearchResult, SearchParams, LocationSearchParams } from "./api/types";
 
 interface SearchProps {
   isLoggedIn: boolean;
@@ -52,6 +53,7 @@ const Search = ({
   const [loading, setLoading] = useState(false);
   const [initialFetchDone, setInitialFetchDone] = useState(false);
   const [shouldFetch, setShouldFetch] = useState(false);
+  const [locationParams, setLocationParams] = useState<LocationSearchParams | null>(null);
 
   const fetchCardData = useCallback(async (ids: string[]) => {
     try {
@@ -75,9 +77,8 @@ const Search = ({
           ...(breed ? { breeds: [breed] } : {}),
           ...(ageMin !== undefined ? { ageMin } : {}),
           ...(ageMax !== undefined ? { ageMax } : {}),
+          ...(selectedZipCodes.length > 0 ? { zipCodes: selectedZipCodes } : {}),
         };
-  
-        console.log("Fetching search results with params:", params);
   
         const newResults = await api.searchDogs(params) as SearchResult;
         if (newResults?.resultIds?.length) {
@@ -95,11 +96,24 @@ const Search = ({
         setShouldFetch(false);
       }
     },
-    [sortOrder, fetchCardData, setSearchResults, loading] 
+    [sortOrder, fetchCardData, setSearchResults, loading, selectedZipCodes] 
   );
+
+  const handleLocationFilter = async (params: LocationSearchParams) => {
+    try {
+      const locationResults = await api.searchLocations(params);
+      const zipCodes = locationResults.results.map(loc => loc.zip_code);
+      setSelectedZipCodes(zipCodes);
+      setCurrentPage(1);
+      setShouldFetch(true);
+    } catch (error) {
+      console.error("Error fetching locations:", error);
+    }
+  };
 
   // Handle search submission
   const handleSearch = (breed?: string | null, minAge?: number, maxAge?: number) => {
+    window.scrollTo(0, 0);
     setCurrentPage(1);
     setShouldFetch(true);
   };
@@ -145,23 +159,22 @@ const Search = ({
   };
 
   return (
-    <div className="p-8 h-screen pb-24 w-full max-w-9xl mx-auto px-10">
+    <div className="p-8 h-screen pb-24 w-full max-w-9xl mx-auto">
       <SearchForm
         breeds={breeds}
         breedFilter={breedFilter}
         setBreedFilter={setBreedFilter}
         handleSearch={() => handleSearch(breedFilter, minAge, maxAge)}
-        selectedLocations={selectedZipCodes}
-        setSelectedLocations={setSelectedZipCodes}
         cards={cards}
         setFilteredCards={() => {}}
         minAge={minAge ?? 0}
         maxAge={maxAge ?? undefined}
         setMinAge={setMinAge}
         setMaxAge={setMaxAge}
+        onLocationFilter={handleLocationFilter}
       />
 
-      <div className="h-screen flex flex-col">
+      <div className="h-screen flex flex-col mt-12">
         <SearchResults
           cards={cards}
           favorites={favorites}
