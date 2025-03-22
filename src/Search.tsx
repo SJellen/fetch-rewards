@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from "react";
 import api from "./api/api";
 import SearchForm from "./SearchForm";
 import SearchResults from "./SearchResults";
-import LocationFilter from "./components/LocationFilter";
+// import LocationFilter from "./components/LocationFilter";
 import { Dog, SearchResult, SearchParams, LocationSearchParams } from "./api/types";
 
 interface SearchProps {
@@ -53,7 +53,7 @@ const Search = ({
   const [loading, setLoading] = useState(false);
   const [initialFetchDone, setInitialFetchDone] = useState(false);
   const [shouldFetch, setShouldFetch] = useState(false);
-  const [locationParams, setLocationParams] = useState<LocationSearchParams | null>(null);
+  // const [locationParams, setLocationParams] = useState<LocationSearchParams | null>(null);
 
   const fetchCardData = useCallback(async (ids: string[]) => {
     try {
@@ -112,7 +112,9 @@ const Search = ({
   };
 
   // Handle search submission
-  const handleSearch = (breed?: string | null, minAge?: number, maxAge?: number) => {
+  const handleSearch = (
+    // breed?: string | null, minAge?: number, maxAge?: number
+  ) => {
     window.scrollTo(0, 0);
     setCurrentPage(1);
     setShouldFetch(true);
@@ -164,7 +166,9 @@ const Search = ({
         breeds={breeds}
         breedFilter={breedFilter}
         setBreedFilter={setBreedFilter}
-        handleSearch={() => handleSearch(breedFilter, minAge, maxAge)}
+        handleSearch={() => handleSearch(
+          // breedFilter, minAge, maxAge
+        )}
         cards={cards}
         setFilteredCards={() => {}}
         minAge={minAge ?? 0}

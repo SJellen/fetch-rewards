@@ -3,7 +3,6 @@ import Login from "./Login";
 import "./App.css";
 import Search from "./Search";
 import Header from "./Header";
-import Favorites from "./Favorites";
 import useFavorites from "./hooks/useFavorites";
 import { SearchResult } from "./api/types";
 

@@ -1,6 +1,4 @@
-import { Coordinates, LocationSearchParams, LocationSearchResult } from "./types";
-
-// import { Coordinates } from "./types";
+import {  LocationSearchParams, LocationSearchResult } from "./types";
 
 export const API_URL = "https://frontend-take-home-service.fetch.com";
 
@@ -97,7 +95,6 @@ const api = {
     }
 
     const url = `${API_URL}/dogs/search?${queryString.toString()}`;
-    console.log("Fetching from:", url);
 
     return fetchWithRetry(url, {
       method: "GET",

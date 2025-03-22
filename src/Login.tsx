@@ -5,11 +5,10 @@ import useLocalStorage from "./hooks/useLocalStorage"; // Import custom hook
 interface LoginProps {
   onLoginSuccess: (username: string) => void;
   setFavorites: React.Dispatch<React.SetStateAction<Set<string>>>;
-  // favorites: Set<string>; // Receive favorites as props
 }
 
-export default function Login({ onLoginSuccess, setFavorites, 
-  // favorites
+export default function Login({ onLoginSuccess, 
+
  }: LoginProps) {
   const [error, setError] = useState("");
   const [credentials, setCredentials] = useState({ name: "", email: "" });
