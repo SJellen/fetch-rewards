@@ -78,9 +78,13 @@ export default function SearchResults({
                 currentPage <= 1 ? "opacity-50 cursor-not-allowed" : ""
               }`}
             >
-              Previous
+              <span className="hidden sm:inline">Previous</span>
+              <span className="sm:hidden">&lt;</span>
             </button>
-            <span className="mx-4">Page {currentPage}</span>
+            <span className="mx-4">
+              <span className="hidden sm:inline">Page </span>
+              {currentPage}
+            </span>
             <button
               onClick={() => {
                 setCurrentPage((page) =>
@@ -97,12 +101,21 @@ export default function SearchResults({
                   : ""
               }`}
             >
-              Next
+              <span className="hidden sm:inline">Next</span>
+              <span className="sm:hidden">&gt;</span>
             </button>
           </div>
 
           <button onClick={handleSortToggle}>
-            Sort: {sortOrder === "asc" ? "A to Z" : "Z to A"}
+            <span className="hidden xl:inline">
+              Sort: {sortOrder === "asc" ? "Ascending" : "Descending"}
+            </span>
+            <span className="hidden sm:inline xl:hidden">
+              Sort: {sortOrder === "asc" ? "A to Z" : "Z to A"}
+            </span>
+            <span className="sm:hidden">
+              {sortOrder === "asc" ? "A/Z" : "Z/A"}
+            </span>
           </button>
         </div>
       )}
