@@ -41,7 +41,7 @@ export default function SearchResults({
   setShouldFetch,
 }: SearchResultsProps) {
   return (
-    <div className="h-screen flex flex-col mt-12">
+    <div className="h-screen flex flex-col mt-12 border-2 border-red-500 w-full">
       {!showFavorites && (
         <>
           {cards.length === 0 && (

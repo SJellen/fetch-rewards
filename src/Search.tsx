@@ -3,7 +3,12 @@ import api from "./api/api";
 import SearchForm from "./SearchForm";
 import SearchResults from "./SearchResults";
 // import LocationFilter from "./components/LocationFilter";
-import { Dog, SearchResult, SearchParams, LocationSearchParams } from "./api/types";
+import {
+  Dog,
+  SearchResult,
+  SearchParams,
+  LocationSearchParams,
+} from "./api/types";
 
 interface SearchProps {
   isLoggedIn: boolean;
@@ -27,7 +32,7 @@ interface SearchProps {
   setShowFavorites: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-const Search = ({
+export default function Search({
   isLoggedIn,
   favorites,
   setFavorites,
@@ -47,7 +52,7 @@ const Search = ({
   setMaxAge,
   showFavorites,
   setShowFavorites,
-}: SearchProps) => {
+}: SearchProps) {
   const [cards, setCards] = useState<Dog[]>([]);
   const [selectedZipCodes, setSelectedZipCodes] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
@@ -65,10 +70,15 @@ const Search = ({
   }, []);
 
   const fetchSearchResults = useCallback(
-    async (page: number, ageMin?: number, ageMax?: number, breed?: string | null) => {
+    async (
+      page: number,
+      ageMin?: number,
+      ageMax?: number,
+      breed?: string | null
+    ) => {
       if (loading) return;
       setLoading(true);
-  
+
       try {
         const params: SearchParams = {
           size: 25,
@@ -77,14 +87,18 @@ const Search = ({
           ...(breed ? { breeds: [breed] } : {}),
           ...(ageMin !== undefined ? { ageMin } : {}),
           ...(ageMax !== undefined ? { ageMax } : {}),
-          ...(selectedZipCodes.length > 0 ? { zipCodes: selectedZipCodes } : {}),
+          ...(selectedZipCodes.length > 0
+            ? { zipCodes: selectedZipCodes }
+            : {}),
         };
-  
-        const newResults = await api.searchDogs(params) as SearchResult;
+
+        const newResults = (await api.searchDogs(params)) as SearchResult;
         if (newResults?.resultIds?.length) {
           setSearchResults(newResults);
-  
-          const cardsData = await fetchCardData(newResults.resultIds) as Dog[];
+
+          const cardsData = (await fetchCardData(
+            newResults.resultIds
+          )) as Dog[];
           setCards(cardsData);
         } else {
           setCards([]);
@@ -96,13 +110,13 @@ const Search = ({
         setShouldFetch(false);
       }
     },
-    [sortOrder, fetchCardData, setSearchResults, loading, selectedZipCodes] 
+    [sortOrder, fetchCardData, setSearchResults, loading, selectedZipCodes]
   );
 
   const handleLocationFilter = async (params: LocationSearchParams) => {
     try {
       const locationResults = await api.searchLocations(params);
-      const zipCodes = locationResults.results.map(loc => loc.zip_code);
+      const zipCodes = locationResults.results.map((loc) => loc.zip_code);
       setSelectedZipCodes(zipCodes);
       setCurrentPage(1);
       setShouldFetch(true);
@@ -112,20 +126,29 @@ const Search = ({
   };
 
   // Handle search submission
-  const handleSearch = (
+  const handleSearch = () =>
     // breed?: string | null, minAge?: number, maxAge?: number
-  ) => {
-    window.scrollTo(0, 0);
-    setCurrentPage(1);
-    setShouldFetch(true);
-  };
+    {
+      window.scrollTo(0, 0);
+      setCurrentPage(1);
+      setShouldFetch(true);
+    };
 
   // Fetch new results when dependencies change
   useEffect(() => {
     if (shouldFetch) {
       fetchSearchResults(currentPage, minAge, maxAge, breedFilter);
     }
-  }, [currentPage, sortOrder, selectedZipCodes, breedFilter, minAge, maxAge, fetchSearchResults, shouldFetch]);
+  }, [
+    currentPage,
+    sortOrder,
+    selectedZipCodes,
+    breedFilter,
+    minAge,
+    maxAge,
+    fetchSearchResults,
+    shouldFetch,
+  ]);
 
   // Fetch initial data when the user logs in
   useEffect(() => {
@@ -161,14 +184,15 @@ const Search = ({
   };
 
   return (
-    <div className="p-8 h-screen pb-24 w-full max-w-9xl mx-auto">
+    <div className="px-8 h-screen  w-screen mx-auto ">
       <SearchForm
         breeds={breeds}
         breedFilter={breedFilter}
         setBreedFilter={setBreedFilter}
-        handleSearch={() => handleSearch(
+        handleSearch={
+          () => handleSearch()
           // breedFilter, minAge, maxAge
-        )}
+        }
         cards={cards}
         setFilteredCards={() => {}}
         minAge={minAge ?? 0}
@@ -178,7 +202,7 @@ const Search = ({
         onLocationFilter={handleLocationFilter}
       />
 
-      <div className="h-screen flex flex-col mt-12">
+      <div className="h-screen flex flex-col ">
         <SearchResults
           cards={cards}
           favorites={favorites}
@@ -195,9 +219,4 @@ const Search = ({
       </div>
     </div>
   );
-};
-
-export default Search;
-
-
-
+}
