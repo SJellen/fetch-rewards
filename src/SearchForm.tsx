@@ -95,7 +95,7 @@ export default function SearchForm({
   return (
     <form
       onSubmit={handleSearchClick}
-      className="fixed top-12 flex justify-between items-center bg-black z-4 w-full p-2 max-w-9xl mx-auto left-1/2 transform -translate-x-1/2 px-8"
+      className="fixed top-12 flex justify-between items-center bg-black z-4 w-full p-2 max-w-9xl mx-auto left-1/2 transform -translate-x-1/2 px-4"
     >
       <div className="flex items-center">
         <select

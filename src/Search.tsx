@@ -184,7 +184,7 @@ export default function Search({
   };
 
   return (
-    <div className="px-8 h-screen  w-screen mx-auto ">
+    <div className="px-4 h-screen  w-screen mx-auto ">
       <SearchForm
         breeds={breeds}
         breedFilter={breedFilter}

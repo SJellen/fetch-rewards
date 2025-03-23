@@ -9,8 +9,8 @@ export default function Header({
   handleLogout,
 }: HeaderProps) {
   return (
-    <header className="w-screen fixed top-0 bg-gradient-to-r from-[#510359] to-violet-950 h-12 flex items-center px-4 justify-between z-4 max-w-9xl">
-      <div className="xl:ml-4">
+    <header className="w-screen fixed top-0 bg-gradient-to-r from-[#510359] to-violet-950 h-12 flex items-center px-4 justify-between z-4 ">
+      <div >
         <img src={fetchLogo} alt="fetchLogo" className="w-10 h-10 sm:hidden" />
         <h2 className="text-white hidden sm:block">
           fetch<span className="text-[#ffdf02]">Connects</span>

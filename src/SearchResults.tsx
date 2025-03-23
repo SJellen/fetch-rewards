@@ -41,9 +41,9 @@ export default function SearchResults({
   setShouldFetch,
 }: SearchResultsProps) {
   return (
-    <div className="h-screen flex flex-col mt-12 border-2 border-red-500 w-full">
+    <div className="h-screen flex flex-col mt-12 w-full">
       {!showFavorites && (
-        <>
+        <div className="w-full pb-24">
           {cards.length === 0 && (
             <p className="text-black mt-24">
               {searchResults === null
@@ -56,7 +56,7 @@ export default function SearchResults({
             favorites={favorites}
             setFavorites={setFavorites}
           />
-        </>
+        </div>
       )}
       {showFavorites && (
         <Favorites
@@ -66,7 +66,7 @@ export default function SearchResults({
         />
       )}
       {searchResults && !showFavorites && (
-        <div className="bg-black p-4 flex justify-between fixed bottom-0 w-full left-1/2 transform -translate-x-1/2">
+        <div className="bg-black p-4 flex justify-between fixed bottom-0 w-full left-1/2 transform -translate-x-1/2 ">
           <div>
             <button
               onClick={() => {
