@@ -8,7 +8,7 @@ interface CardsProps {
   setFavorites: React.Dispatch<React.SetStateAction<Set<string>>>;
 }
 
-const Cards: React.FC<CardsProps> = ({ cards, favorites, setFavorites }) => {
+export default function Cards({ cards, favorites, setFavorites }: CardsProps) {
   const handleFavoriteToggle = (id: string) => {
     setFavorites((prev) => {
       const newFavorites = new Set(prev);
@@ -33,6 +33,4 @@ const Cards: React.FC<CardsProps> = ({ cards, favorites, setFavorites }) => {
       ))}
     </div>
   );
-};
-
-export default Cards;
+}

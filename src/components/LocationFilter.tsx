@@ -1,13 +1,15 @@
-import React, { useState } from 'react';
-import { LocationSearchParams } from '../api/types';
-import { states } from '../data/states';
+import React, { useState } from "react";
+import { LocationSearchParams } from "../api/types";
+import { states } from "../data/states";
 
 interface LocationFilterProps {
   onLocationFilter: (params: LocationSearchParams) => void;
 }
 
-const LocationFilter: React.FC<LocationFilterProps> = ({ onLocationFilter }) => {
-  const [city, setCity] = useState('');
+export default function LocationFilter({
+  onLocationFilter,
+}: LocationFilterProps) {
+  const [city, setCity] = useState("");
   const [selectedStates, setSelectedStates] = useState<string[]>([]);
 
   const handleCityChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -15,7 +17,10 @@ const LocationFilter: React.FC<LocationFilterProps> = ({ onLocationFilter }) => 
   };
 
   const handleStateChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const value = Array.from(e.target.selectedOptions, option => option.value);
+    const value = Array.from(
+      e.target.selectedOptions,
+      (option) => option.value
+    );
     setSelectedStates(value);
   };
 
@@ -33,7 +38,10 @@ const LocationFilter: React.FC<LocationFilterProps> = ({ onLocationFilter }) => 
       <h3 className="text-lg font-semibold mb-4">Filter by Location</h3>
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <label htmlFor="city" className="block text-sm font-medium text-white">
+          <label
+            htmlFor="city"
+            className="block text-sm font-medium text-white"
+          >
             City
           </label>
           <input
@@ -47,7 +55,10 @@ const LocationFilter: React.FC<LocationFilterProps> = ({ onLocationFilter }) => 
         </div>
 
         <div>
-          <label htmlFor="states" className="block text-sm font-medium text-white">
+          <label
+            htmlFor="states"
+            className="block text-sm font-medium text-white"
+          >
             States
           </label>
           <select
@@ -74,6 +85,4 @@ const LocationFilter: React.FC<LocationFilterProps> = ({ onLocationFilter }) => 
       </form>
     </div>
   );
-};
-
-export default LocationFilter; 
+}

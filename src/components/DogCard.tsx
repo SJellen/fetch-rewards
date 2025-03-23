@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import  { useState } from 'react';
 import { Dog } from '../api/types';
 
 interface DogCardProps {
@@ -7,7 +7,7 @@ interface DogCardProps {
   onFavoriteToggle: (id: string) => void;
 }
 
-const DogCard: React.FC<DogCardProps> = ({ dog, isFavorite, onFavoriteToggle }) => {
+export default function DogCard({ dog, isFavorite, onFavoriteToggle }: DogCardProps) {
   const [isExpanded, setIsExpanded] = useState(false);
 
   const handleCardClick = () => {
@@ -56,6 +56,5 @@ const DogCard: React.FC<DogCardProps> = ({ dog, isFavorite, onFavoriteToggle }) 
       </button>
     </div>
   );
-};
+}
 
-export default DogCard; 

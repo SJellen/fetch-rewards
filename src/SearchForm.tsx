@@ -1,4 +1,10 @@
-import React, { ChangeEvent, useState, useEffect, useCallback, useRef } from "react";
+import React, {
+  ChangeEvent,
+  useState,
+  useEffect,
+  useCallback,
+  useRef,
+} from "react";
 import { Dog, LocationSearchParams } from "./api/types";
 import LocationFilter from "./components/LocationFilter";
 
@@ -16,7 +22,7 @@ interface SearchFormProps {
   onLocationFilter: (params: LocationSearchParams) => void;
 }
 
-const SearchForm: React.FC<SearchFormProps> = ({
+export default function SearchForm({
   breeds,
   breedFilter,
   setBreedFilter,
@@ -26,13 +32,15 @@ const SearchForm: React.FC<SearchFormProps> = ({
   maxAge,
   setMinAge,
   setMaxAge,
-  onLocationFilter
-}) => {
+  onLocationFilter,
+}: SearchFormProps) {
   const [showFilters, setShowFilters] = useState(false);
   const [localMinAge, setLocalMinAge] = useState<number | undefined>(minAge);
   const [localMaxAge, setLocalMaxAge] = useState<number | undefined>(maxAge);
 
-  const initialFiltersRef = useRef<{ minAge?: number; maxAge?: number } | null>(null);
+  const initialFiltersRef = useRef<{ minAge?: number; maxAge?: number } | null>(
+    null
+  );
 
   useEffect(() => {
     if (cards.length > 0) {
@@ -85,9 +93,16 @@ const SearchForm: React.FC<SearchFormProps> = ({
   };
 
   return (
-    <form onSubmit={handleSearchClick} className="fixed top-12 flex justify-between items-center bg-black z-4 w-full p-2 max-w-9xl mx-auto left-1/2 transform -translate-x-1/2 px-8">
+    <form
+      onSubmit={handleSearchClick}
+      className="fixed top-12 flex justify-between items-center bg-black z-4 w-full p-2 max-w-9xl mx-auto left-1/2 transform -translate-x-1/2 px-8"
+    >
       <div className="flex items-center">
-        <select value={breedFilter ?? ""} onChange={handleBreedChange} className="p-2 rounded border">
+        <select
+          value={breedFilter ?? ""}
+          onChange={handleBreedChange}
+          className="p-2 rounded border"
+        >
           <option value="">All Breeds</option>
           {breeds.map((breed) => (
             <option key={breed} value={breed}>
@@ -97,7 +112,11 @@ const SearchForm: React.FC<SearchFormProps> = ({
         </select>
 
         <div className="relative">
-          <button type="button" className="p-2 border rounded ml-2" onClick={() => setShowFilters(!showFilters)}>
+          <button
+            type="button"
+            className="p-2 border rounded ml-2"
+            onClick={() => setShowFilters(!showFilters)}
+          >
             Filters
           </button>
           {showFilters && (
@@ -110,7 +129,17 @@ const SearchForm: React.FC<SearchFormProps> = ({
                     name="ageMin"
                     placeholder={localMinAge?.toString() || ""}
                     value={localMinAge}
-                    onChange={(e) => setLocalMinAge(Math.max(1, Math.min(parseInt(e.target.value) || 1, localMaxAge as number)))}
+                    onChange={(e) =>
+                      setLocalMinAge(
+                        Math.max(
+                          1,
+                          Math.min(
+                            parseInt(e.target.value) || 1,
+                            localMaxAge as number
+                          )
+                        )
+                      )
+                    }
                     className="p-2 rounded border w-full bg-gray-800 text-white"
                   />
                   <input
@@ -118,7 +147,17 @@ const SearchForm: React.FC<SearchFormProps> = ({
                     name="ageMax"
                     placeholder={localMaxAge?.toString() || ""}
                     value={localMaxAge}
-                    onChange={(e) => setLocalMaxAge(Math.max(localMinAge as number, Math.min(parseInt(e.target.value) || (localMaxAge as number), localMaxAge as number)))}
+                    onChange={(e) =>
+                      setLocalMaxAge(
+                        Math.max(
+                          localMinAge as number,
+                          Math.min(
+                            parseInt(e.target.value) || (localMaxAge as number),
+                            localMaxAge as number
+                          )
+                        )
+                      )
+                    }
                     className="p-2 rounded border w-full bg-gray-800 text-white mt-2"
                   />
                 </div>
@@ -127,10 +166,18 @@ const SearchForm: React.FC<SearchFormProps> = ({
               </div>
 
               <div className="mt-4 flex gap-2">
-                <button onClick={applyFilters} type="submit" className="flex-1 bg-[#510359] text-white py-2 px-4 rounded-md hover:bg-[#3a023f]">
+                <button
+                  onClick={applyFilters}
+                  type="submit"
+                  className="flex-1 bg-[#510359] text-white py-2 px-4 rounded-md hover:bg-[#3a023f]"
+                >
                   Search
                 </button>
-                <button onClick={resetFilters} type="button" className="flex-1 bg-gray-600 text-white py-2 px-4 rounded-md hover:bg-gray-700">
+                <button
+                  onClick={resetFilters}
+                  type="button"
+                  className="flex-1 bg-gray-600 text-white py-2 px-4 rounded-md hover:bg-gray-700"
+                >
                   Reset
                 </button>
               </div>
@@ -140,8 +187,4 @@ const SearchForm: React.FC<SearchFormProps> = ({
       </div>
     </form>
   );
-};
-
-export default SearchForm;
-
-
+}

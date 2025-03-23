@@ -27,7 +27,7 @@ interface SearchResultsProps {
   setShouldFetch: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-const SearchResults: React.FC<SearchResultsProps> = ({
+export default function SearchResults({
   cards,
   favorites,
   setFavorites,
@@ -39,25 +39,28 @@ const SearchResults: React.FC<SearchResultsProps> = ({
   showFavorites,
   setShowFavorites,
   setShouldFetch,
-}) => {
+}: SearchResultsProps) {
   return (
     <div className="h-screen flex flex-col mt-12">
       {!showFavorites && (
         <>
           {cards.length === 0 && (
             <p className="text-black mt-24">
-              {searchResults === null 
+              {searchResults === null
                 ? "Welcome! Please select a breed to start your search."
-                : "No dogs found. Try adjusting your search criteria."
-              }
+                : "No dogs found. Try adjusting your search criteria."}
             </p>
           )}
-          <Cards cards={cards} favorites={favorites} setFavorites={setFavorites} />
+          <Cards
+            cards={cards}
+            favorites={favorites}
+            setFavorites={setFavorites}
+          />
         </>
       )}
       {showFavorites && (
-        <Favorites 
-          onClose={() => setShowFavorites(false)} 
+        <Favorites
+          onClose={() => setShowFavorites(false)}
           favorites={favorites}
           setFavorites={setFavorites}
         />
@@ -71,7 +74,9 @@ const SearchResults: React.FC<SearchResultsProps> = ({
                 setShouldFetch(true);
               }}
               disabled={currentPage <= 1}
-              className={`${currentPage <= 1 ? 'opacity-50 cursor-not-allowed' : ''}`}
+              className={`${
+                currentPage <= 1 ? "opacity-50 cursor-not-allowed" : ""
+              }`}
             >
               Previous
             </button>
@@ -86,7 +91,11 @@ const SearchResults: React.FC<SearchResultsProps> = ({
                 setShouldFetch(true);
               }}
               disabled={currentPage * 25 >= searchResults.total}
-              className={`${currentPage * 25 >= searchResults.total ? 'opacity-50 cursor-not-allowed' : ''}`}
+              className={`${
+                currentPage * 25 >= searchResults.total
+                  ? "opacity-50 cursor-not-allowed"
+                  : ""
+              }`}
             >
               Next
             </button>
@@ -99,6 +108,4 @@ const SearchResults: React.FC<SearchResultsProps> = ({
       )}
     </div>
   );
-};
-
-export default SearchResults;
+}
