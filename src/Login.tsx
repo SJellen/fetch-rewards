@@ -57,12 +57,12 @@ export default function Login({ onLoginSuccess,
     <div className="flex h-screen flex-col text-black">
       <form
         onSubmit={handleSubmit}
-        className="flex flex-col gap-8 p-20 justify-between shadow-lg rounded-lg bg-[#510359]/25"
+        className="flex flex-col gap-8 p-20 justify-between shadow-lg rounded-lg bg-slate-800"
       >
         <h1 className="text-4xl font-bold mb-8 text-white">
           fetch<span className="text-[#ffdf02]">Connects</span>
         </h1>
-        <p>Please Login</p>
+        <p className="text-white">Please Login</p>
         <input
           type="text"
           value={credentials.name}
@@ -70,7 +70,7 @@ export default function Login({ onLoginSuccess,
             setCredentials({ ...credentials, name: e.target.value })
           }
           placeholder="Name"
-          className="border border-[#510359]/25 rounded p-2 text-[#510359]/50 bg-white"
+          className="border border-slate-800 rounded p-2 text-white bg-slate-900"
         />
         <input
           type="email"
@@ -79,7 +79,7 @@ export default function Login({ onLoginSuccess,
             setCredentials({ ...credentials, email: e.target.value })
           }
           placeholder="Email"
-          className="border border-[#510359]/25 rounded p-2 mt-2 text-[#510359]/50 bg-white"
+          className="border border-slate-800 rounded p-2 mt-2 text-white bg-slate-900"
         />
         {error && (
           <div className="text-red-500 mt-2" style={{ color: "red" }}>

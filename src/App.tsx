@@ -58,7 +58,7 @@ function App() {
   };
 
   return (
-    <div className="flex flex-col justify-center items-center w-screen max-w-9xl h-auto">
+    <div className={`flex flex-col justify-center items-center w-screen max-w-9xl overflow-y-auto ${isLoggedIn ? "bg-slate-900" : "bg-slate-950"} `}>
       <Header
         isLoggedIn={isLoggedIn}
         favorites={favorites}

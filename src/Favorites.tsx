@@ -83,8 +83,8 @@ export default function Favorites({
   }
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 ">
-      <div className="bg-white rounded-lg p-6 w-full max-w-9xl mx-auto max-h-[90vh] overflow-y-auto relative">
+    <div className="fixed inset-0 bg-slate-950   flex items-center justify-center z-50 ">
+      <div className=" rounded-lg p-6 w-full  mx-auto h-screen overflow-y-auto relative py-20">
         <button
           onClick={onClose}
           className="absolute top-4 right-4 text-white hover:text-gray-700"
