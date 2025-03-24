@@ -134,9 +134,7 @@ export default function Search({
               size: 10000, // Get maximum results to ensure we get all locations
             };
 
-            console.log("Location search params:", locationParams);
             const locationResult = await api.searchLocations(locationParams);
-            console.log("Location search result:", locationResult);
 
             if (
               locationResult &&
@@ -147,7 +145,6 @@ export default function Search({
               const locationZipCodes = locationResult.results.map(
                 (loc) => loc.zip_code
               );
-              console.log("Found zip codes:", locationZipCodes);
               searchParams.zipCodes = locationZipCodes;
             }
           } catch (error) {
@@ -155,7 +152,6 @@ export default function Search({
           }
         }
 
-        console.log("Final search params:", searchParams);
         const newResults = (await api.searchDogs(searchParams)) as SearchResult;
 
         if (newResults?.resultIds?.length) {
@@ -173,7 +169,7 @@ export default function Search({
         setLoading(false);
       }
     },
-    [fetchCardData, setSearchResults, sortOrder,setCurrentPage]
+    [fetchCardData, setSearchResults, sortOrder, setCurrentPage]
   );
 
   // Fetch new results when dependencies change
