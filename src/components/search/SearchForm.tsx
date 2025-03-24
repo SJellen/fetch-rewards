@@ -5,7 +5,7 @@ import React, {
   useCallback,
   useRef,
 } from "react";
-import { Dog, SearchParams } from "../../api/types";
+import { Dog, SearchParams, LocationSearchParams } from "../../api/types";
 
 interface SearchFormProps {
   breeds: string[];
@@ -35,6 +35,8 @@ export default function SearchForm({
   const [localMaxAge, setLocalMaxAge] = useState<number | undefined>(maxAge);
   const [zipCode, setZipCode] = useState("");
   const [radius, setRadius] = useState("25");
+  const [zipError, setZipError] = useState("");
+  const [radiusError, setRadiusError] = useState("");
 
   const initialFiltersRef = useRef<{ minAge?: number; maxAge?: number } | null>(
     null
@@ -55,41 +57,138 @@ export default function SearchForm({
     }
   }, [cards, setMinAge, setMaxAge]);
 
+  const validateZipCode = (zip: string) => {
+    if (!zip) return true;
+    return /^\d{5}$/.test(zip);
+  };
+
+  const validateRadius = (rad: string) => {
+    const num = parseInt(rad);
+    return !isNaN(num) && num >= 1 && num <= 1000;
+  };
+
+  const handleZipChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value.replace(/\D/g, "").slice(0, 5);
+    setZipCode(value);
+    if (value && !validateZipCode(value)) {
+      setZipError("Please enter a valid 5-digit ZIP code");
+    } else {
+      setZipError("");
+    }
+  };
+
+  const handleRadiusChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setRadius(value);
+    if (value && !validateRadius(value)) {
+      setRadiusError("Please enter a radius between 1 and 1000 miles");
+    } else {
+      setRadiusError("");
+    }
+  };
+
+  const calculateBoundingBox = (
+    zipCode: string,
+    radiusMiles: number
+  ): LocationSearchParams => {
+    // Convert miles to degrees (approximate)
+    // 1 degree is approximately 69 miles at the equator
+    const degreesPerMile = 1 / 69;
+    const radiusDegrees = radiusMiles * degreesPerMile;
+
+    // For now, we'll use a default center point since we don't have the actual coordinates
+    // In a real app, you would look up the coordinates for the ZIP code
+    const centerLat = 40.7128; // Example: New York City latitude
+    const centerLon = -74.006; // Example: New York City longitude
+
+    // Calculate the bounding box coordinates
+    const top = {
+      lat: centerLat + radiusDegrees,
+      lon: centerLon + radiusDegrees,
+    };
+    const left = {
+      lat: centerLat - radiusDegrees,
+      lon: centerLon - radiusDegrees,
+    };
+    const bottom = {
+      lat: centerLat - radiusDegrees,
+      lon: centerLon + radiusDegrees,
+    };
+    const right = {
+      lat: centerLat + radiusDegrees,
+      lon: centerLon - radiusDegrees,
+    };
+
+    // Return the location search parameters with the bounding box
+    return {
+      geoBoundingBox: {
+        top,
+        left,
+        bottom,
+        right,
+      },
+      size: 10000, // Get maximum results to ensure we get all locations
+    };
+  };
+
   const handleBreedChange = (e: ChangeEvent<HTMLSelectElement>) => {
     const selectedBreed = e.target.value || null;
     setBreedFilter(selectedBreed);
-    handleSearch({
+    const searchParams: SearchParams = {
       breeds: selectedBreed ? [selectedBreed] : undefined,
       ageMin: localMinAge,
       ageMax: localMaxAge,
-      zipCodes: zipCode ? [zipCode] : undefined,
-      size: parseInt(radius) || 25,
-    });
+    };
+
+    if (zipCode && validateZipCode(zipCode) && validateRadius(radius)) {
+      const locationParams = calculateBoundingBox(zipCode, parseInt(radius));
+      Object.assign(searchParams, locationParams);
+    }
+
+    handleSearch(searchParams);
   };
 
   const applyFilters = () => {
+    if (!validateZipCode(zipCode) || !validateRadius(radius)) {
+      return;
+    }
     setMinAge(localMinAge);
     setMaxAge(localMaxAge);
-    handleSearch({
+
+    const searchParams: SearchParams = {
       breeds: breedFilter ? [breedFilter] : undefined,
       ageMin: localMinAge,
       ageMax: localMaxAge,
-      zipCodes: zipCode ? [zipCode] : undefined,
-      size: parseInt(radius) || 25,
-    });
+    };
+
+    if (zipCode) {
+      const locationParams = calculateBoundingBox(zipCode, parseInt(radius));
+      Object.assign(searchParams, locationParams);
+    }
+
+    handleSearch(searchParams);
     setShowFilters(false);
   };
 
   const handleSearchClick = useCallback(
     (e: React.FormEvent) => {
       e.preventDefault();
-      handleSearch({
+      if (!validateZipCode(zipCode) || !validateRadius(radius)) {
+        return;
+      }
+
+      const searchParams: SearchParams = {
         breeds: breedFilter ? [breedFilter] : undefined,
         ageMin: minAge,
         ageMax: maxAge,
-        zipCodes: zipCode ? [zipCode] : undefined,
-        size: parseInt(radius) || 25,
-      });
+      };
+
+      if (zipCode) {
+        const locationParams = calculateBoundingBox(zipCode, parseInt(radius));
+        Object.assign(searchParams, locationParams);
+      }
+
+      handleSearch(searchParams);
     },
     [handleSearch, minAge, maxAge, breedFilter, zipCode, radius]
   );
@@ -102,6 +201,8 @@ export default function SearchForm({
       setLocalMaxAge(initialFiltersRef.current.maxAge);
       setZipCode("");
       setRadius("25");
+      setZipError("");
+      setRadiusError("");
       handleSearch({
         breeds: breedFilter ? [breedFilter] : undefined,
         ageMin: initialFiltersRef.current.minAge,
@@ -182,22 +283,37 @@ export default function SearchForm({
 
                 <div>
                   <p className="font-bold">Location</p>
-                  <input
-                    type="text"
-                    placeholder="Enter ZIP code"
-                    value={zipCode}
-                    onChange={(e) => setZipCode(e.target.value)}
-                    className="p-2 rounded border w-full bg-gray-800 text-white"
-                  />
-                  <input
-                    type="number"
-                    placeholder="Radius (miles)"
-                    value={radius}
-                    onChange={(e) => setRadius(e.target.value)}
-                    min="1"
-                    max="100"
-                    className="p-2 rounded border w-full bg-gray-800 text-white mt-2"
-                  />
+                  <div className="relative">
+                    <input
+                      type="text"
+                      placeholder="Enter ZIP code"
+                      value={zipCode}
+                      onChange={handleZipChange}
+                      maxLength={5}
+                      className={`p-2 rounded border w-full bg-gray-800 text-white ${
+                        zipError ? "border-red-500" : ""
+                      }`}
+                    />
+                    {zipError && (
+                      <p className="text-red-500 text-sm mt-1">{zipError}</p>
+                    )}
+                  </div>
+                  <div className="relative mt-2">
+                    <input
+                      type="number"
+                      placeholder="Radius (miles)"
+                      value={radius}
+                      onChange={handleRadiusChange}
+                      min="1"
+                      max="1000"
+                      className={`p-2 rounded border w-full bg-gray-800 text-white ${
+                        radiusError ? "border-red-500" : ""
+                      }`}
+                    />
+                    {radiusError && (
+                      <p className="text-red-500 text-sm mt-1">{radiusError}</p>
+                    )}
+                  </div>
                 </div>
               </div>
 
@@ -206,6 +322,7 @@ export default function SearchForm({
                   onClick={applyFilters}
                   type="submit"
                   className="flex-1 bg-[#510359] text-white py-2 px-4 rounded-md hover:bg-[#3a023f]"
+                  disabled={!!zipError || !!radiusError}
                 >
                   Search
                 </button>

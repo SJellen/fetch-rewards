@@ -1,4 +1,4 @@
-import {  LocationSearchParams, LocationSearchResult } from "./types";
+import { LocationSearchParams, LocationSearchResult } from "./types";
 
 export const API_URL = "https://frontend-take-home-service.fetch.com";
 
@@ -16,14 +16,20 @@ const fetchWithRetry = async <T>(
       const response = await fetch(url, options);
 
       if (response.status === 429) {
-        console.warn(`🚨 Rate limited. Retrying in ${delay}ms... (Attempt ${attempt + 1})`);
-        await new Promise((resolve) => setTimeout(resolve, delay * (attempt + 1))); // Exponential backoff
+        console.warn(
+          `🚨 Rate limited. Retrying in ${delay}ms... (Attempt ${attempt + 1})`
+        );
+        await new Promise((resolve) =>
+          setTimeout(resolve, delay * (attempt + 1))
+        ); // Exponential backoff
         continue;
       }
 
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(`HTTP ${response.status}: ${errorData.message || "Request failed"}`);
+        throw new Error(
+          `HTTP ${response.status}: ${errorData.message || "Request failed"}`
+        );
       }
 
       return (await response.json()) as T;
@@ -37,7 +43,6 @@ const fetchWithRetry = async <T>(
   throw new Error("Failed to fetch data"); // Should never reach here
 };
 
-
 const api = {
   login: async (name: string, email: string) => {
     return fetchWithRetry(`${API_URL}/auth/login`, {
@@ -45,7 +50,7 @@ const api = {
       headers: {
         "Content-Type": "application/json",
         "Cache-Control": "no-cache",
-        "Pragma": "no-cache",
+        Pragma: "no-cache",
       },
       credentials: "include",
       body: JSON.stringify({ name, email }),
@@ -85,10 +90,14 @@ const api = {
       params.zipCodes.forEach((zip) => queryString.append("zipCodes", zip));
     }
 
-    if (params.ageMin !== undefined) queryString.append("ageMin", String(params.ageMin));
-    if (params.ageMax !== undefined) queryString.append("ageMax", String(params.ageMax));
-    if (params.size !== undefined) queryString.append("size", String(params.size));
-    if (params.from !== undefined) queryString.append("from", String(params.from));
+    if (params.ageMin !== undefined)
+      queryString.append("ageMin", String(params.ageMin));
+    if (params.ageMax !== undefined)
+      queryString.append("ageMax", String(params.ageMax));
+    if (params.size !== undefined)
+      queryString.append("size", String(params.size));
+    if (params.from !== undefined)
+      queryString.append("from", String(params.from));
 
     if (params.sort && (params.sort === "asc" || params.sort === "desc")) {
       queryString.append("sort", `name:${params.sort}`);
@@ -120,7 +129,14 @@ const api = {
         "Content-Type": "application/json",
       },
       credentials: "include",
-      body: JSON.stringify(params),
+      body: JSON.stringify({
+        city: params.city,
+        states: params.states,
+        zipCodes: params.zipCodes,
+        geoBoundingBox: params.geoBoundingBox,
+        size: params.size,
+        from: params.from,
+      }),
     });
   },
 

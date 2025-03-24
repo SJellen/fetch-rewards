@@ -53,7 +53,6 @@ export default function Search({
   setShowFavorites,
 }: SearchProps) {
   const [cards, setCards] = useState<Dog[]>([]);
-  const [selectedZipCodes, setSelectedZipCodes] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
   const [initialFetchDone, setInitialFetchDone] = useState(false);
   const [shouldFetch, setShouldFetch] = useState(false);
@@ -116,17 +115,47 @@ export default function Search({
       setCurrentPage(1);
 
       try {
-        const searchParams: SearchParams = {
+        let searchParams: SearchParams = {
           breeds: params.breeds,
           ageMin: params.ageMin,
           ageMax: params.ageMax,
-          zipCodes: params.zipCodes,
           size: 25,
           from: 0,
           sort: sortOrder,
         };
 
+        // If we have a geoBoundingBox, use it for location search
+        if (params.geoBoundingBox) {
+          try {
+            const locationParams: LocationSearchParams = {
+              geoBoundingBox: params.geoBoundingBox,
+              size: 10000, // Get maximum results to ensure we get all locations
+            };
+
+            console.log("Location search params:", locationParams);
+            const locationResult = await api.searchLocations(locationParams);
+            console.log("Location search result:", locationResult);
+
+            if (
+              locationResult &&
+              locationResult.results &&
+              locationResult.results.length > 0
+            ) {
+              // Extract zip codes from the locations
+              const locationZipCodes = locationResult.results.map(
+                (loc) => loc.zip_code
+              );
+              console.log("Found zip codes:", locationZipCodes);
+              searchParams.zipCodes = locationZipCodes;
+            }
+          } catch (error) {
+            console.error("Error fetching locations:", error);
+          }
+        }
+
+        console.log("Final search params:", searchParams);
         const newResults = (await api.searchDogs(searchParams)) as SearchResult;
+
         if (newResults?.resultIds?.length) {
           setSearchResults(newResults);
           const cardsData = (await fetchCardData(
@@ -151,7 +180,6 @@ export default function Search({
   }, [
     currentPage,
     sortOrder,
-    selectedZipCodes,
     breedFilter,
     minAge,
     maxAge,

@@ -24,6 +24,17 @@ export interface SearchParams {
   size?: number;
   from?: number;
   sort?: string;
+  radius?: number;
+  geoBoundingBox?: {
+    top?: Coordinates;
+    left?: Coordinates;
+    bottom?: Coordinates;
+    right?: Coordinates;
+    bottom_left?: Coordinates;
+    top_right?: Coordinates;
+    bottom_right?: Coordinates;
+    top_left?: Coordinates;
+  };
 }
 
 export interface SearchFormProps {
@@ -77,6 +88,7 @@ export interface LocationSearchParams {
   city?: string;
   states?: string[];
   zipCodes?: string[];
+  radius?: number;
   geoBoundingBox?: {
     top?: Coordinates;
     left?: Coordinates;
