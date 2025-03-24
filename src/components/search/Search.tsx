@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from "react";
 import api from "../../api/api";
 import SearchForm from "./SearchForm";
 import SearchResults from "./SearchResults";
+import Spinner from "../common/Spinner";
 import {
   Dog,
   SearchResult,
@@ -113,6 +114,7 @@ export default function Search({
     async (params: SearchParams) => {
       window.scrollTo(0, 0);
       setCurrentPage(1);
+      setLoading(true);
 
       try {
         let searchParams: SearchParams = {
@@ -167,6 +169,8 @@ export default function Search({
         }
       } catch (error) {
         console.error("Error searching:", error);
+      } finally {
+        setLoading(false);
       }
     },
     [fetchCardData, setSearchResults, sortOrder]
@@ -235,19 +239,25 @@ export default function Search({
       />
 
       <div className="h-screen flex flex-col">
-        <SearchResults
-          cards={cards}
-          favorites={favorites}
-          setFavorites={setFavorites}
-          searchResults={searchResults}
-          currentPage={currentPage}
-          setCurrentPage={setCurrentPage}
-          sortOrder={sortOrder}
-          handleSortToggle={handleSortToggle}
-          showFavorites={showFavorites}
-          setShowFavorites={setShowFavorites}
-          setShouldFetch={setShouldFetch}
-        />
+        {loading ? (
+          <div className="flex items-center justify-center h-full">
+            <Spinner size="large" />
+          </div>
+        ) : (
+          <SearchResults
+            cards={cards}
+            favorites={favorites}
+            setFavorites={setFavorites}
+            searchResults={searchResults}
+            currentPage={currentPage}
+            setCurrentPage={setCurrentPage}
+            sortOrder={sortOrder}
+            handleSortToggle={handleSortToggle}
+            showFavorites={showFavorites}
+            setShowFavorites={setShowFavorites}
+            setShouldFetch={setShouldFetch}
+          />
+        )}
       </div>
     </div>
   );

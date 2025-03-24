@@ -1,24 +1,28 @@
 import React, { useState } from "react";
 import { API_URL } from "../../api/api";
 import useLocalStorage from "../../hooks/useLocalStorage"; // Import custom hook
+import Spinner from "../common/Spinner";
 
 interface LoginProps {
   onLoginSuccess: (username: string) => void;
   setFavorites: React.Dispatch<React.SetStateAction<Set<string>>>;
 }
 
-export default function Login({ onLoginSuccess, 
-  // setFavorites
- }: LoginProps) {
+export default function Login({
+  onLoginSuccess,
+}: // setFavorites
+LoginProps) {
   const [error, setError] = useState("");
   const [credentials, setCredentials] = useState({ name: "", email: "" });
   const [isLoggedIn, setIsLoggedIn] = useLocalStorage("isLoggedIn", false);
   const [userName, setUserName] = useLocalStorage("userName", "");
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleSubmit = async (
     e: React.FormEvent<HTMLFormElement>
   ): Promise<void> => {
     e.preventDefault();
+    setIsLoading(true);
     try {
       const response: Response = await fetch(`${API_URL}/auth/login`, {
         method: "POST",
@@ -39,6 +43,8 @@ export default function Login({ onLoginSuccess,
     } catch (error) {
       console.error("Error during login:", error);
       setError("Login failed. Please try again.");
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -86,9 +92,17 @@ export default function Login({ onLoginSuccess,
         )}
         <button
           type="submit"
-          className="bg-blue-500 text-white px-4 py-2 rounded mt-4"
+          disabled={isLoading}
+          className="bg-blue-500 text-white px-4 py-2 rounded mt-4 flex items-center justify-center gap-2"
         >
-          Login
+          {isLoading ? (
+            <>
+              <Spinner size="small" color="#ffffff" />
+              <span>Logging in...</span>
+            </>
+          ) : (
+            "Login"
+          )}
         </button>
       </form>
     </div>

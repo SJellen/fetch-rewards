@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { Dog } from "../../api/types";
+import Spinner from "../common/Spinner";
 
 interface DogCardProps {
   dog: Dog;
@@ -19,9 +20,13 @@ export default function DogCard({
 }: DogCardProps) {
   const [isExpanded, setIsExpanded] = useState(false);
   const [coordinates, setCoordinates] = useState<Coordinates | null>(null);
+  const [isLoadingMap, setIsLoadingMap] = useState(false);
 
   useEffect(() => {
     const fetchCoordinates = async () => {
+      if (!isExpanded || !dog.zip_code) return;
+
+      setIsLoadingMap(true);
       try {
         const response = await fetch(
           `https://nominatim.openstreetmap.org/search?postalcode=${dog.zip_code}&countrycodes=us&format=json&limit=1`
@@ -35,12 +40,12 @@ export default function DogCard({
         }
       } catch (error) {
         console.error("Error fetching coordinates:", error);
+      } finally {
+        setIsLoadingMap(false);
       }
     };
 
-    if (isExpanded && dog.zip_code) {
-      fetchCoordinates();
-    }
+    fetchCoordinates();
   }, [isExpanded, dog.zip_code]);
 
   const handleCardClick = () => {
@@ -102,13 +107,19 @@ export default function DogCard({
         </div>
       </div>
 
-      {isExpanded && coordinates && (
+      {isExpanded && (
         <div className="mt-4 rounded-lg overflow-hidden border border-gray-200">
-          <iframe
-            src={getMapUrl()}
-            className="w-full h-[200px]"
-            title="Location map"
-          />
+          {isLoadingMap ? (
+            <div className="h-[200px] flex items-center justify-center">
+              <Spinner size="medium" />
+            </div>
+          ) : coordinates ? (
+            <iframe
+              src={getMapUrl()}
+              className="w-full h-[200px]"
+              title="Location map"
+            />
+          ) : null}
         </div>
       )}
 

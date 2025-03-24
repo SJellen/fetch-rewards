@@ -1,11 +1,17 @@
 import React, { useEffect, useState } from "react";
 import api from "../../api/api";
 import { Dog } from "../../api/types";
+import Spinner from "../common/Spinner";
 
 interface FavoritesProps {
   onClose: () => void;
   favorites: Set<string>;
   setFavorites: React.Dispatch<React.SetStateAction<Set<string>>>;
+}
+
+interface Coordinates {
+  lat: number;
+  lon: number;
 }
 
 export default function Favorites({
@@ -19,6 +25,10 @@ export default function Favorites({
   const [matchedDog, setMatchedDog] = useState<Dog | null>(null);
   const [showMatch, setShowMatch] = useState(false);
   const [expandedCard, setExpandedCard] = useState<string | null>(null);
+  const [coordinates, setCoordinates] = useState<Record<string, Coordinates>>(
+    {}
+  );
+  const [isLoadingMap, setIsLoadingMap] = useState<Record<string, boolean>>({});
 
   // Close the component when all favorites are removed
   useEffect(() => {
@@ -79,8 +89,63 @@ export default function Favorites({
     }
   };
 
+  useEffect(() => {
+    const fetchCoordinates = async (dogId: string, zipCode: string) => {
+      if (!expandedCard || !zipCode) return;
+
+      setIsLoadingMap((prev) => ({ ...prev, [dogId]: true }));
+      try {
+        const response = await fetch(
+          `https://nominatim.openstreetmap.org/search?postalcode=${zipCode}&countrycodes=us&format=json&limit=1`
+        );
+        const data = await response.json();
+        if (data && data[0]) {
+          setCoordinates((prev) => ({
+            ...prev,
+            [dogId]: {
+              lat: parseFloat(data[0].lat),
+              lon: parseFloat(data[0].lon),
+            },
+          }));
+        }
+      } catch (error) {
+        console.error("Error fetching coordinates:", error);
+      } finally {
+        setIsLoadingMap((prev) => ({ ...prev, [dogId]: false }));
+      }
+    };
+
+    if (expandedCard) {
+      const dog = favoriteDogs.find((d) => d.id === expandedCard);
+      if (dog?.zip_code) {
+        fetchCoordinates(dog.id, dog.zip_code);
+      }
+    }
+  }, [expandedCard, favoriteDogs]);
+
+  const getMapUrl = (dogId: string) => {
+    const coords = coordinates[dogId];
+    if (!coords) return "";
+    // Create a bounding box that's roughly 5km around the point
+    const latOffset = 0.05;
+    const lonOffset = 0.05;
+    const bbox = [
+      coords.lon - lonOffset,
+      coords.lat - latOffset,
+      coords.lon + lonOffset,
+      coords.lat + latOffset,
+    ].join(",");
+    return `https://www.openstreetmap.org/export/embed.html?bbox=${bbox}&layer=mapnik&marker=${coords.lat},${coords.lon}`;
+  };
+
   if (loading && !isRemoving) {
-    return <div>Loading favorites...</div>;
+    return (
+      <div className="fixed inset-0 bg-slate-950 flex items-center justify-center z-50">
+        <div className="rounded-lg p-6 w-full mx-auto h-screen overflow-y-auto relative py-20">
+          <Spinner size="large" color="#ffdf02" />
+        </div>
+      </div>
+    );
   }
 
   return (
@@ -176,11 +241,17 @@ export default function Favorites({
 
                   {expandedCard === dog.id && (
                     <div className="mt-4 rounded-lg overflow-hidden border border-gray-200">
-                      <iframe
-                        src={`https://www.openstreetmap.org/export/embed.html?bbox=${dog.zip_code}&layer=mapnik`}
-                        className="w-full h-[200px]"
-                        title="Location map"
-                      />
+                      {isLoadingMap[dog.id] ? (
+                        <div className="h-[200px] flex items-center justify-center">
+                          <Spinner size="medium" />
+                        </div>
+                      ) : coordinates[dog.id] ? (
+                        <iframe
+                          src={getMapUrl(dog.id)}
+                          className="w-full h-[200px]"
+                          title="Location map"
+                        />
+                      ) : null}
                     </div>
                   )}
 
