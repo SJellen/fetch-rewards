@@ -24,7 +24,7 @@ export default function DogCard({
     const fetchCoordinates = async () => {
       try {
         const response = await fetch(
-          `https://nominatim.openstreetmap.org/search?postalcode=${dog.zip_code}&format=json&limit=1`
+          `https://nominatim.openstreetmap.org/search?postalcode=${dog.zip_code}&countrycodes=us&format=json&limit=1`
         );
         const data = await response.json();
         if (data && data[0]) {
