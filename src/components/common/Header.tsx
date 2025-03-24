@@ -1,4 +1,3 @@
-import React from "react";
 import { HeaderProps } from "../../api/types";
 import fetchLogo from "../../assets/fetch.png";
 
