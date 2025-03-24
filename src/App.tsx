@@ -5,6 +5,7 @@ import Search from "./components/search/Search";
 import Header from "./components/common/Header";
 import useFavorites from "./hooks/useFavorites";
 import { SearchResult } from "./api/types";
+import logo from "../src/assets/fetch.png";
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -96,11 +97,16 @@ function App() {
             setShowFavorites={setShowFavorites}
           />
         ) : (
-          <div className="mx-auto p-8 mt-10 text-[#510359] text-center h-auto flex flex-col items-center">
+          <div className="mx-auto p-8 mt-10  text-center h-auto flex flex-col items-center">
+            <div className="flex flex-col items-center p-6">
+
+
+            <img src={logo} alt="logo" className="w-10 h-10" />
             <h1 className="text-2xl font-bold">{getGreeting()}</h1>
             <p className="text-lg mt-2 leading-relaxed">
               We are excited to help you find your perfect dog!
             </p>
+            </div>
             <Login
               onLoginSuccess={handleLoginSuccess}
               setFavorites={setFavorites}
