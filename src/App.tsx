@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
-import Login from "./Login";
+import Login from "./components/auth/Login";
 import "./App.css";
-import Search from "./Search";
-import Header from "./Header";
+import Search from "./components/search/Search";
+import Header from "./components/common/Header";
 import useFavorites from "./hooks/useFavorites";
 import { SearchResult } from "./api/types";
 
@@ -58,7 +58,11 @@ function App() {
   };
 
   return (
-    <div className={`flex flex-col justify-center items-center w-screen max-w-9xl overflow-y-auto ${isLoggedIn ? "bg-slate-900" : "bg-slate-950"} `}>
+    <div
+      className={`flex flex-col justify-center items-center w-screen max-w-9xl overflow-y-auto ${
+        isLoggedIn ? "bg-slate-900" : "bg-slate-950"
+      } `}
+    >
       <Header
         isLoggedIn={isLoggedIn}
         favorites={favorites}

@@ -1,5 +1,6 @@
-import { HeaderProps } from "./api/types";
-import fetchLogo from "./assets/fetch.png";
+import React from "react";
+import { HeaderProps } from "../../api/types";
+import fetchLogo from "../../assets/fetch.png";
 
 export default function Header({
   isLoggedIn,
@@ -10,12 +11,11 @@ export default function Header({
 }: HeaderProps) {
   return (
     <header className="w-screen fixed top-0 bg-gradient-to-r from-[#510359] to-violet-950 h-12 flex items-center px-4 justify-between z-4 ">
-      <div >
+      <div>
         <img src={fetchLogo} alt="fetchLogo" className="w-10 h-10 sm:hidden" />
         <h2 className="text-white hidden sm:block">
           fetch<span className="text-[#ffdf02]">Connects</span>
         </h2>
-
       </div>
 
       <div className="flex items-center gap-4">

@@ -1,6 +1,6 @@
 import React from "react";
-import { Dog } from "./api/types";
-import DogCard from "./components/DogCard";
+import { Dog } from "../../api/types";
+import DogCard from "./DogCard";
 
 interface CardsProps {
   cards: Dog[];

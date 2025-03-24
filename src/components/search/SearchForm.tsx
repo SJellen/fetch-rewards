@@ -5,8 +5,8 @@ import React, {
   useCallback,
   useRef,
 } from "react";
-import { Dog, LocationSearchParams } from "./api/types";
-import LocationFilter from "./components/LocationFilter";
+import { Dog, LocationSearchParams } from "../../api/types";
+import LocationFilter from "./LocationFilter";
 
 interface SearchFormProps {
   breeds: string[];
@@ -14,7 +14,6 @@ interface SearchFormProps {
   setBreedFilter: (breed: string | null) => void;
   handleSearch: (minAge?: number, maxAge?: number, breeds?: string) => void;
   cards: Dog[];
-  setFilteredCards: React.Dispatch<React.SetStateAction<Dog[]>>;
   minAge?: number;
   maxAge?: number;
   setMinAge: React.Dispatch<React.SetStateAction<number | undefined>>;

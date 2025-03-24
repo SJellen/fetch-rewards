@@ -1,10 +1,15 @@
-import { useState } from "react";
-import { Dog } from "../api/types";
+import React, { useState, useEffect } from "react";
+import { Dog } from "../../api/types";
 
 interface DogCardProps {
   dog: Dog;
   isFavorite: boolean;
   onFavoriteToggle: (id: string) => void;
+}
+
+interface Coordinates {
+  lat: number;
+  lon: number;
 }
 
 export default function DogCard({
@@ -13,9 +18,47 @@ export default function DogCard({
   onFavoriteToggle,
 }: DogCardProps) {
   const [isExpanded, setIsExpanded] = useState(false);
+  const [coordinates, setCoordinates] = useState<Coordinates | null>(null);
+
+  useEffect(() => {
+    const fetchCoordinates = async () => {
+      try {
+        const response = await fetch(
+          `https://nominatim.openstreetmap.org/search?postalcode=${dog.zip_code}&format=json&limit=1`
+        );
+        const data = await response.json();
+        if (data && data[0]) {
+          setCoordinates({
+            lat: parseFloat(data[0].lat),
+            lon: parseFloat(data[0].lon),
+          });
+        }
+      } catch (error) {
+        console.error("Error fetching coordinates:", error);
+      }
+    };
+
+    if (isExpanded && dog.zip_code) {
+      fetchCoordinates();
+    }
+  }, [isExpanded, dog.zip_code]);
 
   const handleCardClick = () => {
     setIsExpanded(!isExpanded);
+  };
+
+  const getMapUrl = () => {
+    if (!coordinates) return "";
+    // Create a bounding box that's roughly 5km around the point
+    const latOffset = 0.05;
+    const lonOffset = 0.05;
+    const bbox = [
+      coordinates.lon - lonOffset,
+      coordinates.lat - latOffset,
+      coordinates.lon + lonOffset,
+      coordinates.lat + latOffset,
+    ].join(",");
+    return `https://www.openstreetmap.org/export/embed.html?bbox=${bbox}&layer=mapnik&marker=${coordinates.lat},${coordinates.lon}`;
   };
 
   return (
@@ -59,10 +102,10 @@ export default function DogCard({
         </div>
       </div>
 
-      {isExpanded && (
+      {isExpanded && coordinates && (
         <div className="mt-4 rounded-lg overflow-hidden border border-gray-200">
           <iframe
-            src={`https://www.openstreetmap.org/export/embed.html?bbox=${dog.zip_code}&layer=mapnik`}
+            src={getMapUrl()}
             className="w-full h-[200px]"
             title="Location map"
           />

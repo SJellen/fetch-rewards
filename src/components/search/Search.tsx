@@ -1,14 +1,14 @@
 import { useState, useEffect, useCallback } from "react";
-import api from "./api/api";
+import api from "../../api/api";
 import SearchForm from "./SearchForm";
 import SearchResults from "./SearchResults";
-// import LocationFilter from "./components/LocationFilter";
+import LocationFilter from "./LocationFilter";
 import {
   Dog,
   SearchResult,
   SearchParams,
   LocationSearchParams,
-} from "./api/types";
+} from "../../api/types";
 
 interface SearchProps {
   isLoggedIn: boolean;
@@ -194,7 +194,6 @@ export default function Search({
           // breedFilter, minAge, maxAge
         }
         cards={cards}
-        setFilteredCards={() => {}}
         minAge={minAge ?? 0}
         maxAge={maxAge ?? undefined}
         setMinAge={setMinAge}

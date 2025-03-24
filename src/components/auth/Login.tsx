@@ -1,15 +1,13 @@
-import { useState } from "react";
-import { API_URL } from "./api/api";
-import useLocalStorage from "./hooks/useLocalStorage"; // Import custom hook
+import React, { useState } from "react";
+import { API_URL } from "../../api/api";
+import useLocalStorage from "../../hooks/useLocalStorage"; // Import custom hook
 
 interface LoginProps {
   onLoginSuccess: (username: string) => void;
   setFavorites: React.Dispatch<React.SetStateAction<Set<string>>>;
 }
 
-export default function Login({ onLoginSuccess, 
-
- }: LoginProps) {
+export default function Login({ onLoginSuccess, setFavorites }: LoginProps) {
   const [error, setError] = useState("");
   const [credentials, setCredentials] = useState({ name: "", email: "" });
   const [isLoggedIn, setIsLoggedIn] = useLocalStorage("isLoggedIn", false);
@@ -26,12 +24,12 @@ export default function Login({ onLoginSuccess,
         headers: { "Content-Type": "application/json" },
         credentials: "include",
       });
-  
+
       if (!response.ok) {
         const errorText: string = await response.text();
         throw new Error(errorText);
       }
-  
+
       // Update state and localStorage
       setIsLoggedIn(true);
       setUserName(credentials.name);
@@ -41,7 +39,6 @@ export default function Login({ onLoginSuccess,
       setError("Login failed. Please try again.");
     }
   };
-  
 
   if (isLoggedIn) {
     return (
@@ -51,7 +48,6 @@ export default function Login({ onLoginSuccess,
       </div>
     );
   }
-  
 
   return (
     <div className="flex h-screen flex-col text-black">
@@ -96,6 +92,3 @@ export default function Login({ onLoginSuccess,
     </div>
   );
 }
-
-
-

@@ -1,7 +1,7 @@
 // SearchResults.tsx
 import React from "react";
-import Cards from "./Cards";
-import Favorites from "./Favorites";
+import Cards from "../dogs/Cards";
+import Favorites from "../dogs/Favorites";
 interface Dog {
   id: string;
   img: string;
@@ -45,7 +45,7 @@ export default function SearchResults({
       {!showFavorites && (
         <div className="w-full pb-24">
           {cards.length === 0 && (
-            <p className="text-black mt-24">
+            <p className="text-white mt-24">
               {searchResults === null
                 ? "Welcome! Please select a breed to start your search."
                 : "No dogs found. Try adjusting your search criteria."}

@@ -1,6 +1,6 @@
-import { useEffect, useState } from "react";
-import api from "./api/api";
-import { Dog } from "./api/types";
+import React, { useEffect, useState } from "react";
+import api from "../../api/api";
+import { Dog } from "../../api/types";
 
 interface FavoritesProps {
   onClose: () => void;

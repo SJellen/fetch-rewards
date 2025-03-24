@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import { LocationSearchParams } from "../api/types";
-import { states } from "../data/states";
+import { LocationSearchParams } from "../../api/types";
+import { states } from "../../data/states";
 
 interface LocationFilterProps {
   onLocationFilter: (params: LocationSearchParams) => void;
