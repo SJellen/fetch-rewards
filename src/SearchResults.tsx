@@ -67,7 +67,7 @@ export default function SearchResults({
       )}
       {searchResults && !showFavorites && (
         <div className="bg-black p-4 flex justify-between fixed bottom-0 w-full left-1/2 transform -translate-x-1/2 ">
-          <div>
+          <div className="flex items-center">
             <button
               onClick={() => {
                 setCurrentPage((page) => Math.max(1, page - 1));
@@ -79,9 +79,25 @@ export default function SearchResults({
               }`}
             >
               <span className="hidden sm:inline">Previous</span>
-              <span className="sm:hidden">&lt;</span>
+              <span className="sm:hidden">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  strokeWidth={1.5}
+                  stroke="currentColor"
+                  className="size-6"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M15.75 19.5 8.25 12l7.5-7.5"
+                  />
+                </svg>
+              </span>
             </button>
-            <span className="mx-4">
+
+            <span className="mx-4 ">
               <span className="hidden sm:inline">Page </span>
               {currentPage}
             </span>
@@ -102,19 +118,65 @@ export default function SearchResults({
               }`}
             >
               <span className="hidden sm:inline">Next</span>
-              <span className="sm:hidden">&gt;</span>
+              <span className="sm:hidden">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  strokeWidth={1.5}
+                  stroke="currentColor"
+                  className="size-6"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="m8.25 4.5 7.5 7.5-7.5 7.5"
+                  />
+                </svg>
+              </span>
             </button>
           </div>
 
-          <button onClick={handleSortToggle}>
+          <button
+            onClick={handleSortToggle}
+            className="flex items-center gap-2"
+          >
+            {sortOrder === "desc" ? (
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                strokeWidth={1.5}
+                stroke="currentColor"
+                className="size-6"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M3 4.5h14.25M3 9h9.75M3 13.5h9.75m4.5-4.5v12m0 0-3.75-3.75M17.25 21 21 17.25"
+                />
+              </svg>
+            ) : (
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                strokeWidth={1.5}
+                stroke="currentColor"
+                className="size-6"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M3 4.5h14.25M3 9h9.75M3 13.5h5.25m5.25-.75L17.25 9m0 0L21 12.75M17.25 9v12"
+                />
+              </svg>
+            )}
             <span className="hidden xl:inline">
-              Sort: {sortOrder === "asc" ? "Ascending" : "Descending"}
+              {sortOrder === "asc" ? "Ascending" : "Descending"}
             </span>
             <span className="hidden sm:inline xl:hidden">
-              Sort: {sortOrder === "asc" ? "A to Z" : "Z to A"}
-            </span>
-            <span className="sm:hidden">
-              {sortOrder === "asc" ? "A/Z" : "Z/A"}
+              {sortOrder === "asc" ? "A to Z" : "Z to A"}
             </span>
           </button>
         </div>

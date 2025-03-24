@@ -93,7 +93,7 @@ export default function Favorites({
         </button>
         <h2 className="text-2xl font-bold mb-4">Your Favorite Dogs</h2>
 
-        {showMatch && matchedDog && (
+        {showMatch && matchedDog ? (
           <div className="mb-8 p-4 bg-[#510359] text-white rounded-lg">
             <h3 className="text-xl font-bold mb-2">Your Perfect Match!</h3>
             <div className="flex items-center gap-4">
@@ -116,46 +116,48 @@ export default function Favorites({
               Close Match
             </button>
           </div>
-        )}
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-          {favoriteDogs.map((dog) => (
-            <div
-              key={dog.id}
-              className="border p-4 bg-white text-[#510359] shadow-lg rounded-lg relative"
-            >
-              <img
-                src={dog.img}
-                alt={dog.name}
-                className="w-full h-48 object-cover mb-2"
-              />
-              <h3 className="text-xl">{dog.name}</h3>
-              <p>Breed: {dog.breed}</p>
-              <p>Age: {dog.age}</p>
-              <p>Location: {dog.zip_code}</p>
-              <button
-                onClick={() => handleFavoriteCardClick(dog.id)}
-                className="absolute top-2 right-2 text-2xl bg-[#510359] p-2 rounded-lg hover:cursor-pointer text-red-500"
-              >
-                ❤️
-              </button>
+        ) : (
+          <>
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+              {favoriteDogs.map((dog) => (
+                <div
+                  key={dog.id}
+                  className="border p-4 bg-white text-[#510359] shadow-lg rounded-lg relative"
+                >
+                  <img
+                    src={dog.img}
+                    alt={dog.name}
+                    className="w-full h-48 object-cover mb-2"
+                  />
+                  <h3 className="text-xl">{dog.name}</h3>
+                  <p>Breed: {dog.breed}</p>
+                  <p>Age: {dog.age}</p>
+                  <p>Location: {dog.zip_code}</p>
+                  <button
+                    onClick={() => handleFavoriteCardClick(dog.id)}
+                    className="absolute top-2 right-2 text-2xl bg-[#510359] p-2 rounded-lg hover:cursor-pointer text-red-500"
+                  >
+                    ❤️
+                  </button>
+                </div>
+              ))}
+              {favoriteDogs.length === 0 && (
+                <div className="col-span-full text-center text-gray-500">
+                  No favorite dogs yet
+                </div>
+              )}
             </div>
-          ))}
-          {favoriteDogs.length === 0 && (
-            <div className="col-span-full text-center text-gray-500">
-              No favorite dogs yet
-            </div>
-          )}
-        </div>
-        {favoriteDogs.length > 0 && (
-          <div className="mt-6 flex justify-center">
-            <button
-              onClick={handlePerfectMatch}
-              className="bg-[#510359] text-white px-8 py-3 rounded-lg hover:bg-[#510359]/90 transition-colors"
-            >
-              Find Perfect Match
-            </button>
-          </div>
+            {favoriteDogs.length > 0 && (
+              <div className="mt-6 flex justify-center">
+                <button
+                  onClick={handlePerfectMatch}
+                  className="bg-[#510359] text-white px-8 py-3 rounded-lg hover:bg-[#510359]/90 transition-colors"
+                >
+                  Find Perfect Match
+                </button>
+              </div>
+            )}
+          </>
         )}
       </div>
     </div>
