@@ -88,7 +88,7 @@ export default function SearchForm({
   };
 
   const calculateBoundingBox = (
-    zipCode: string,
+    // zipCode: string,
     radiusMiles: number
   ): LocationSearchParams => {
     // Convert miles to degrees (approximate)
@@ -141,7 +141,10 @@ export default function SearchForm({
     };
 
     if (zipCode && validateZipCode(zipCode) && validateRadius(radius)) {
-      const locationParams = calculateBoundingBox(zipCode, parseInt(radius));
+      const locationParams = calculateBoundingBox(
+        // zipCode,
+        parseInt(radius)
+      );
       Object.assign(searchParams, locationParams);
     }
 
@@ -162,7 +165,10 @@ export default function SearchForm({
     };
 
     if (zipCode) {
-      const locationParams = calculateBoundingBox(zipCode, parseInt(radius));
+      const locationParams = calculateBoundingBox(
+        // zipCode,
+        parseInt(radius)
+      );
       Object.assign(searchParams, locationParams);
     }
 
@@ -184,7 +190,9 @@ export default function SearchForm({
       };
 
       if (zipCode) {
-        const locationParams = calculateBoundingBox(zipCode, parseInt(radius));
+        const locationParams = calculateBoundingBox(
+          // zipCode,
+           parseInt(radius));
         Object.assign(searchParams, locationParams);
       }
 
