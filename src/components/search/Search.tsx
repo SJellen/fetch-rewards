@@ -57,7 +57,6 @@ export default function Search({
   const [loading, setLoading] = useState(false);
   const [initialFetchDone, setInitialFetchDone] = useState(false);
   const [shouldFetch, setShouldFetch] = useState(false);
-  // const [locationParams, setLocationParams] = useState<LocationSearchParams | null>(null);
 
   const fetchCardData = useCallback(async (ids: string[]) => {
     try {
@@ -73,7 +72,8 @@ export default function Search({
       page: number,
       ageMin?: number,
       ageMax?: number,
-      breed?: string | null
+      breed?: string | null,
+      zipCodes?: string[]
     ) => {
       if (loading) return;
       setLoading(true);
@@ -86,9 +86,7 @@ export default function Search({
           ...(breed ? { breeds: [breed] } : {}),
           ...(ageMin !== undefined ? { ageMin } : {}),
           ...(ageMax !== undefined ? { ageMax } : {}),
-          ...(selectedZipCodes.length > 0
-            ? { zipCodes: selectedZipCodes }
-            : {}),
+          ...(zipCodes && zipCodes.length > 0 ? { zipCodes } : {}),
         };
 
         const newResults = (await api.searchDogs(params)) as SearchResult;
@@ -109,29 +107,41 @@ export default function Search({
         setShouldFetch(false);
       }
     },
-    [sortOrder, fetchCardData, setSearchResults, loading, selectedZipCodes]
+    [sortOrder, fetchCardData, setSearchResults, loading]
   );
 
-  const handleLocationFilter = async (params: LocationSearchParams) => {
-    try {
-      const locationResults = await api.searchLocations(params);
-      const zipCodes = locationResults.results.map((loc) => loc.zip_code);
-      setSelectedZipCodes(zipCodes);
-      setCurrentPage(1);
-      setShouldFetch(true);
-    } catch (error) {
-      console.error("Error fetching locations:", error);
-    }
-  };
-
-  // Handle search submission
-  const handleSearch = () =>
-    // breed?: string | null, minAge?: number, maxAge?: number
-    {
+  const handleSearch = useCallback(
+    async (params: SearchParams) => {
       window.scrollTo(0, 0);
       setCurrentPage(1);
-      setShouldFetch(true);
-    };
+
+      try {
+        const searchParams: SearchParams = {
+          breeds: params.breeds,
+          ageMin: params.ageMin,
+          ageMax: params.ageMax,
+          zipCodes: params.zipCodes,
+          size: 25,
+          from: 0,
+          sort: sortOrder,
+        };
+
+        const newResults = (await api.searchDogs(searchParams)) as SearchResult;
+        if (newResults?.resultIds?.length) {
+          setSearchResults(newResults);
+          const cardsData = (await fetchCardData(
+            newResults.resultIds
+          )) as Dog[];
+          setCards(cardsData);
+        } else {
+          setCards([]);
+        }
+      } catch (error) {
+        console.error("Error searching:", error);
+      }
+    },
+    [fetchCardData, setSearchResults, sortOrder]
+  );
 
   // Fetch new results when dependencies change
   useEffect(() => {
@@ -183,24 +193,20 @@ export default function Search({
   };
 
   return (
-    <div className="px-4 h-screen  w-screen mx-auto ">
+    <div className="px-4 h-screen w-screen mx-auto">
       <SearchForm
         breeds={breeds}
         breedFilter={breedFilter}
         setBreedFilter={setBreedFilter}
-        handleSearch={
-          () => handleSearch()
-          // breedFilter, minAge, maxAge
-        }
+        handleSearch={handleSearch}
         cards={cards}
         minAge={minAge ?? 0}
         maxAge={maxAge ?? undefined}
         setMinAge={setMinAge}
         setMaxAge={setMaxAge}
-        onLocationFilter={handleLocationFilter}
       />
 
-      <div className="h-screen flex flex-col ">
+      <div className="h-screen flex flex-col">
         <SearchResults
           cards={cards}
           favorites={favorites}

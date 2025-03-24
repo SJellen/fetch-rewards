@@ -5,20 +5,18 @@ import React, {
   useCallback,
   useRef,
 } from "react";
-import { Dog, LocationSearchParams } from "../../api/types";
-import LocationFilter from "./LocationFilter";
+import { Dog, SearchParams } from "../../api/types";
 
 interface SearchFormProps {
   breeds: string[];
   breedFilter: string | null;
   setBreedFilter: (breed: string | null) => void;
-  handleSearch: (minAge?: number, maxAge?: number, breeds?: string) => void;
+  handleSearch: (params: SearchParams) => void;
   cards: Dog[];
   minAge?: number;
   maxAge?: number;
   setMinAge: React.Dispatch<React.SetStateAction<number | undefined>>;
   setMaxAge: React.Dispatch<React.SetStateAction<number | undefined>>;
-  onLocationFilter: (params: LocationSearchParams) => void;
 }
 
 export default function SearchForm({
@@ -31,11 +29,12 @@ export default function SearchForm({
   maxAge,
   setMinAge,
   setMaxAge,
-  onLocationFilter,
 }: SearchFormProps) {
   const [showFilters, setShowFilters] = useState(false);
   const [localMinAge, setLocalMinAge] = useState<number | undefined>(minAge);
   const [localMaxAge, setLocalMaxAge] = useState<number | undefined>(maxAge);
+  const [zipCode, setZipCode] = useState("");
+  const [radius, setRadius] = useState("25");
 
   const initialFiltersRef = useRef<{ minAge?: number; maxAge?: number } | null>(
     null
@@ -59,22 +58,40 @@ export default function SearchForm({
   const handleBreedChange = (e: ChangeEvent<HTMLSelectElement>) => {
     const selectedBreed = e.target.value || null;
     setBreedFilter(selectedBreed);
-    handleSearch(undefined, undefined, selectedBreed ?? undefined);
+    handleSearch({
+      breeds: selectedBreed ? [selectedBreed] : undefined,
+      ageMin: localMinAge,
+      ageMax: localMaxAge,
+      zipCodes: zipCode ? [zipCode] : undefined,
+      size: parseInt(radius) || 25,
+    });
   };
 
   const applyFilters = () => {
     setMinAge(localMinAge);
     setMaxAge(localMaxAge);
-    handleSearch(localMinAge, localMaxAge, breedFilter ?? undefined);
+    handleSearch({
+      breeds: breedFilter ? [breedFilter] : undefined,
+      ageMin: localMinAge,
+      ageMax: localMaxAge,
+      zipCodes: zipCode ? [zipCode] : undefined,
+      size: parseInt(radius) || 25,
+    });
     setShowFilters(false);
   };
 
   const handleSearchClick = useCallback(
     (e: React.FormEvent) => {
       e.preventDefault();
-      handleSearch(minAge ?? 1, maxAge ?? 20, breedFilter ?? undefined);
+      handleSearch({
+        breeds: breedFilter ? [breedFilter] : undefined,
+        ageMin: minAge,
+        ageMax: maxAge,
+        zipCodes: zipCode ? [zipCode] : undefined,
+        size: parseInt(radius) || 25,
+      });
     },
-    [handleSearch, minAge, maxAge, breedFilter]
+    [handleSearch, minAge, maxAge, breedFilter, zipCode, radius]
   );
 
   const resetFilters = () => {
@@ -83,24 +100,26 @@ export default function SearchForm({
       setMaxAge(initialFiltersRef.current.maxAge);
       setLocalMinAge(initialFiltersRef.current.minAge);
       setLocalMaxAge(initialFiltersRef.current.maxAge);
-      handleSearch(
-        initialFiltersRef.current.minAge,
-        initialFiltersRef.current.maxAge,
-        breedFilter ?? undefined
-      );
+      setZipCode("");
+      setRadius("25");
+      handleSearch({
+        breeds: breedFilter ? [breedFilter] : undefined,
+        ageMin: initialFiltersRef.current.minAge,
+        ageMax: initialFiltersRef.current.maxAge,
+      });
     }
   };
 
   return (
     <form
       onSubmit={handleSearchClick}
-      className="fixed top-12  flex justify-between items-center bg-black z-4 w-full p-2 max-w-9xl mx-auto left-1/2 transform -translate-x-1/2 px-4 "
+      className="fixed top-12 flex justify-between items-center bg-black z-4 w-full p-2 max-w-9xl mx-auto left-1/2 transform -translate-x-1/2 px-4"
     >
       <div className="flex items-center justify-between w-full">
         <select
           value={breedFilter ?? ""}
           onChange={handleBreedChange}
-          className="p-2 rounded border"
+          className="p-2 rounded border bg-gray-800 text-white"
         >
           <option value="">All Breeds</option>
           {breeds.map((breed) => (
@@ -113,13 +132,13 @@ export default function SearchForm({
         <div className="relative">
           <button
             type="button"
-            className="p-2 border rounded ml-2"
+            className="p-2 border rounded ml-2 bg-gray-800 text-white"
             onClick={() => setShowFilters(!showFilters)}
           >
             Filters
           </button>
           {showFilters && (
-            <div className="absolute bg-black rounded mt-2 p-4 z-10 text-white w-96 right-0">
+            <div className="absolute bg-black rounded mt-2 p-4 z-10 text-white w-96 right-0 border border-[#ffdf02]/25">
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <p className="font-bold">Age</p>
@@ -161,7 +180,25 @@ export default function SearchForm({
                   />
                 </div>
 
-                <LocationFilter onLocationFilter={onLocationFilter} />
+                <div>
+                  <p className="font-bold">Location</p>
+                  <input
+                    type="text"
+                    placeholder="Enter ZIP code"
+                    value={zipCode}
+                    onChange={(e) => setZipCode(e.target.value)}
+                    className="p-2 rounded border w-full bg-gray-800 text-white"
+                  />
+                  <input
+                    type="number"
+                    placeholder="Radius (miles)"
+                    value={radius}
+                    onChange={(e) => setRadius(e.target.value)}
+                    min="1"
+                    max="100"
+                    className="p-2 rounded border w-full bg-gray-800 text-white mt-2"
+                  />
+                </div>
               </div>
 
               <div className="mt-4 flex gap-2">

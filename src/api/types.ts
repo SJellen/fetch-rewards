@@ -76,6 +76,7 @@ export interface Location {
 export interface LocationSearchParams {
   city?: string;
   states?: string[];
+  zipCodes?: string[];
   geoBoundingBox?: {
     top?: Coordinates;
     left?: Coordinates;
@@ -99,5 +100,3 @@ export interface State {
   abbreviation: string;
   name: string;
 }
-
-
