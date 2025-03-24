@@ -117,7 +117,7 @@ export default function Search({
       setLoading(true);
 
       try {
-        let searchParams: SearchParams = {
+        const searchParams: SearchParams = {
           breeds: params.breeds,
           ageMin: params.ageMin,
           ageMax: params.ageMax,
@@ -173,7 +173,7 @@ export default function Search({
         setLoading(false);
       }
     },
-    [fetchCardData, setSearchResults, sortOrder]
+    [fetchCardData, setSearchResults, sortOrder,setCurrentPage]
   );
 
   // Fetch new results when dependencies change

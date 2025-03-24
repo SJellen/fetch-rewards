@@ -135,6 +135,27 @@ export default function Favorites({
       const matchResult = await api.matchDogs(Array.from(favorites));
       const matchedDogs = (await api.getDogs([matchResult.match])) as Dog[];
       setMatchState({ dog: matchedDogs[0], show: true });
+
+      // Fetch coordinates for the matched dog
+      const dog = matchedDogs[0];
+      if (dog?.zip_code) {
+        const response = await fetch(
+          `https://nominatim.openstreetmap.org/search?postalcode=${dog.zip_code}&countrycodes=us&format=json&limit=1`
+        );
+        const data = await response.json();
+        if (data?.[0]) {
+          setMapState((prev) => ({
+            coordinates: {
+              ...prev.coordinates,
+              [dog.id]: {
+                lat: parseFloat(data[0].lat),
+                lon: parseFloat(data[0].lon),
+              },
+            },
+            isLoading: { ...prev.isLoading, [dog.id]: false },
+          }));
+        }
+      }
     } catch (error) {
       console.error("Error finding perfect match:", error);
     } finally {
@@ -199,12 +220,22 @@ export default function Favorites({
   return (
     <div className="fixed inset-0 bg-slate-950 flex items-center justify-center z-50">
       <div className="rounded-lg p-6 w-full mx-auto h-screen overflow-y-auto relative py-20">
-        <button
-          onClick={onClose}
-          className="absolute top-4 right-4 text-white hover:text-gray-700"
-        >
-          x
-        </button>
+        {matchState.dog !== null ? (
+          <button
+            onClick={() => setMatchState({ dog: null, show: false })}
+            className="absolute top-4 right-4 text-white hover:text-gray-700"
+          >
+            Close Match
+          </button>
+        ) : (
+          <button
+            onClick={onClose}
+            className="absolute top-4 right-4 text-white hover:text-gray-700"
+          >
+            x
+          </button>
+        )}
+
         <h2 className="text-2xl font-bold mb-4 text-white py-10">
           {matchState.show ? "Your Perfect Match!" : "Your Favorite Dogs"}
         </h2>
@@ -221,9 +252,7 @@ export default function Favorites({
                   />
                 </div>
                 <div className="lg:w-1/2 space-y-6">
-                  <h3 className="text-3xl font-bold">
-                    {matchState.dog.name}
-                  </h3>
+                  <h3 className="text-3xl font-bold">{matchState.dog.name}</h3>
                   <div className="grid grid-cols-2 gap-4">
                     <div className="bg-white/10 p-4 rounded-lg">
                       <span className="block text-sm font-medium text-[#ffdf02] mb-1">
@@ -257,20 +286,13 @@ export default function Favorites({
                       isLoading={mapState.isLoading[matchState.dog.id]}
                     />
                   </div>
-                  <button
-                    onClick={() => setMatchState({ dog: null, show: false })}
-                    // className="mt-6 bg-[#ffdf02] text-[#510359] px-8 py-3 rounded-lg hover:bg-[#ffdf02]/90 transition-colors text-lg font-medium"
-                    className="mt-6 "
-                  >
-                    Close Match
-                  </button>
                 </div>
               </div>
             </div>
           </div>
         ) : (
           <>
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 3xl:grid-cols-7 auto-rows-min gap-4">
               {favoriteDogs.map((dog) => (
                 <div
                   key={dog.id}
