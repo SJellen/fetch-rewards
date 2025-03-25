@@ -5,7 +5,8 @@ import React, {
   useCallback,
   useRef,
 } from "react";
-import { Dog, SearchParams, LocationSearchParams } from "../../api/types";
+import { Dog, SearchParams } from "../../api/types";
+import { API_URL } from "../../api/api";
 
 interface SearchFormProps {
   breeds: string[];
@@ -87,72 +88,181 @@ export default function SearchForm({
     }
   };
 
-  const calculateBoundingBox = (
-    // zipCode: string,
+  const calculateBoundingBox = async (
+    zipCode: string,
     radiusMiles: number
-  ): LocationSearchParams => {
-    // Convert miles to degrees (approximate)
-    // 1 degree is approximately 69 miles at the equator
-    const degreesPerMile = 1 / 69;
-    const radiusDegrees = radiusMiles * degreesPerMile;
+  ): Promise<string[]> => {
+    try {
+      // First get the coordinates for the ZIP code
+      const locationResponse = await fetch(`${API_URL}/locations`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify([zipCode]),
+      });
 
-    // For now, we'll use a default center point since we don't have the actual coordinates
-    // In a real app, you would look up the coordinates for the ZIP code
-    const centerLat = 40.7128; // Example: New York City latitude
-    const centerLon = -74.006; // Example: New York City longitude
+      if (!locationResponse.ok) {
+        console.error(
+          `Failed to fetch location for ZIP ${zipCode}: ${locationResponse.status}`
+        );
+        return [zipCode];
+      }
 
-    // Calculate the bounding box coordinates
-    const top = {
-      lat: centerLat + radiusDegrees,
-      lon: centerLon + radiusDegrees,
-    };
-    const left = {
-      lat: centerLat - radiusDegrees,
-      lon: centerLon - radiusDegrees,
-    };
-    const bottom = {
-      lat: centerLat - radiusDegrees,
-      lon: centerLon + radiusDegrees,
-    };
-    const right = {
-      lat: centerLat + radiusDegrees,
-      lon: centerLon - radiusDegrees,
-    };
+      interface Location {
+        zip_code: string;
+        latitude: number;
+        longitude: number;
+        distance?: number;
+      }
 
-    // Return the location search parameters with the bounding box
-    return {
-      geoBoundingBox: {
-        top,
-        left,
-        bottom,
-        right,
-      },
-      size: 10000, // Get maximum results to ensure we get all locations
-    };
+      const locations = (await locationResponse.json()) as Location[];
+
+      // Validate location data
+      if (!Array.isArray(locations) || locations.length === 0) {
+        return [zipCode];
+      }
+
+      const location = locations[0];
+
+      // Validate location coordinates
+      if (
+        !location ||
+        typeof location.latitude !== "number" ||
+        typeof location.longitude !== "number"
+      ) {
+        return [zipCode];
+      }
+
+      // Convert miles to degrees (approximate)
+      // 1 degree of latitude = ~69 miles
+      // 1 degree of longitude = ~69 * cos(latitude) miles
+      const latDegPerMile = 1 / 69;
+      const lonDegPerMile =
+        1 / (69 * Math.cos((location.latitude * Math.PI) / 180));
+      const latRadius = radiusMiles * latDegPerMile;
+      const lonRadius = radiusMiles * lonDegPerMile;
+
+      // Search for locations within the bounding box
+      const searchResponse = await fetch(`${API_URL}/locations/search`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify({
+          geoBoundingBox: {
+            bottom_left: {
+              lat: location.latitude - latRadius,
+              lon: location.longitude - lonRadius,
+            },
+            top_right: {
+              lat: location.latitude + latRadius,
+              lon: location.longitude + lonRadius,
+            },
+          },
+          size: 100,
+        }),
+      });
+
+      if (!searchResponse.ok) {
+        console.error(`Failed to search locations: ${searchResponse.status}`);
+        return [zipCode];
+      }
+
+      interface LocationSearchResult {
+        results: Location[];
+        total: number;
+      }
+
+      const searchResult =
+        (await searchResponse.json()) as LocationSearchResult;
+
+      // Validate search results
+      if (!searchResult || !Array.isArray(searchResult.results)) {
+        return [zipCode];
+      }
+
+      if (searchResult.results.length === 0) {
+        return [zipCode];
+      }
+
+      // Calculate distances and filter by actual radius
+      const nearbyLocations = searchResult.results
+        .filter(
+          (loc) =>
+            loc &&
+            typeof loc.latitude === "number" &&
+            typeof loc.longitude === "number"
+        )
+        .map((loc) => {
+          const R = 3959; // Earth's radius in miles
+          const lat1 = (location.latitude * Math.PI) / 180;
+          const lat2 = (loc.latitude * Math.PI) / 180;
+          const dLat = ((loc.latitude - location.latitude) * Math.PI) / 180;
+          const dLon = ((loc.longitude - location.longitude) * Math.PI) / 180;
+
+          const a =
+            Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+            Math.cos(lat1) *
+              Math.cos(lat2) *
+              Math.sin(dLon / 2) *
+              Math.sin(dLon / 2);
+
+          const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+          const distance = R * c;
+
+          return { ...loc, distance };
+        })
+        .filter((loc) => loc.distance <= radiusMiles)
+        .sort((a, b) => (a.distance || 0) - (b.distance || 0));
+
+      // Always include the original ZIP code first
+      const nearbyZips = [zipCode];
+      nearbyLocations.forEach((loc) => {
+        if (loc.zip_code !== zipCode) {
+          nearbyZips.push(loc.zip_code);
+        }
+      });
+
+      return nearbyZips;
+    } catch (error) {
+      console.error("Error searching locations:", error);
+      return [zipCode];
+    }
   };
 
-  const handleBreedChange = (e: ChangeEvent<HTMLSelectElement>) => {
+  const handleBreedChange = async (e: ChangeEvent<HTMLSelectElement>) => {
     const selectedBreed = e.target.value || null;
     setBreedFilter(selectedBreed);
+
     const searchParams: SearchParams = {
       breeds: selectedBreed ? [selectedBreed] : undefined,
-      ageMin: localMinAge,
-      ageMax: localMaxAge,
+      ageMin: minAge,
+      ageMax: maxAge,
+      size: 100,
+      from: 0,
+      sort: "breed:asc",
     };
 
+    // If we have a valid ZIP code and radius, include them in the search
     if (zipCode && validateZipCode(zipCode) && validateRadius(radius)) {
-      const locationParams = calculateBoundingBox(
-        // zipCode,
-        parseInt(radius)
-      );
-      Object.assign(searchParams, locationParams);
+      try {
+        const zipCodes = await calculateBoundingBox(zipCode, parseInt(radius));
+        if (zipCodes.length > 0) {
+          searchParams.zipCodes = zipCodes;
+        }
+      } catch (error) {
+        console.error("Error getting ZIP codes for breed search:", error);
+      }
     }
 
     handleSearch(searchParams);
   };
 
-  const applyFilters = () => {
-    if (!validateZipCode(zipCode) || !validateRadius(radius)) {
+  const applyFilters = async () => {
+    if (zipCode && (!validateZipCode(zipCode) || !validateRadius(radius))) {
       return;
     }
     setMinAge(localMinAge);
@@ -162,14 +272,20 @@ export default function SearchForm({
       breeds: breedFilter ? [breedFilter] : undefined,
       ageMin: localMinAge,
       ageMax: localMaxAge,
+      size: 100,
+      from: 0,
+      sort: "breed:asc",
     };
 
-    if (zipCode) {
-      const locationParams = calculateBoundingBox(
-        // zipCode,
-        parseInt(radius)
-      );
-      Object.assign(searchParams, locationParams);
+    if (zipCode && validateZipCode(zipCode)) {
+      try {
+        const zipCodes = await calculateBoundingBox(zipCode, parseInt(radius));
+        if (zipCodes.length > 0) {
+          searchParams.zipCodes = zipCodes;
+        }
+      } catch (error) {
+        console.error("Error getting ZIP codes for filter search:", error);
+      }
     }
 
     handleSearch(searchParams);
@@ -177,9 +293,9 @@ export default function SearchForm({
   };
 
   const handleSearchClick = useCallback(
-    (e: React.FormEvent) => {
+    async (e: React.FormEvent) => {
       e.preventDefault();
-      if (!validateZipCode(zipCode) || !validateRadius(radius)) {
+      if (zipCode && (!validateZipCode(zipCode) || !validateRadius(radius))) {
         return;
       }
 
@@ -187,13 +303,23 @@ export default function SearchForm({
         breeds: breedFilter ? [breedFilter] : undefined,
         ageMin: minAge,
         ageMax: maxAge,
+        size: 100,
+        from: 0,
+        sort: "breed:asc",
       };
 
-      if (zipCode) {
-        const locationParams = calculateBoundingBox(
-          // zipCode,
-           parseInt(radius));
-        Object.assign(searchParams, locationParams);
+      if (zipCode && validateZipCode(zipCode)) {
+        try {
+          const zipCodes = await calculateBoundingBox(
+            zipCode,
+            parseInt(radius)
+          );
+          if (zipCodes.length > 0) {
+            searchParams.zipCodes = zipCodes;
+          }
+        } catch (error) {
+          console.error("Error getting ZIP codes for search:", error);
+        }
       }
 
       handleSearch(searchParams);
@@ -211,10 +337,15 @@ export default function SearchForm({
       setRadius("25");
       setZipError("");
       setRadiusError("");
+
       handleSearch({
         breeds: breedFilter ? [breedFilter] : undefined,
         ageMin: initialFiltersRef.current.minAge,
         ageMax: initialFiltersRef.current.maxAge,
+        size: 100,
+        from: 0,
+        sort: "breed:asc",
+        zipCodes: [], // Clear ZIP codes when resetting
       });
     }
   };
@@ -254,38 +385,36 @@ export default function SearchForm({
                   <input
                     type="number"
                     name="ageMin"
-                    placeholder={localMinAge?.toString() || ""}
-                    value={localMinAge}
-                    onChange={(e) =>
-                      setLocalMinAge(
-                        Math.max(
-                          1,
-                          Math.min(
-                            parseInt(e.target.value) || 1,
-                            localMaxAge as number
-                          )
-                        )
-                      )
-                    }
+                    placeholder="Min Age"
+                    value={localMinAge || ""}
+                    onChange={(e) => {
+                      const value = parseInt(e.target.value) || 0;
+                      if (value >= 0) {
+                        setLocalMinAge(value);
+                        if (localMaxAge !== undefined && value > localMaxAge) {
+                          setLocalMaxAge(value);
+                        }
+                      }
+                    }}
                     className="p-2 rounded border w-full bg-gray-800 text-white"
+                    min="0"
                   />
                   <input
                     type="number"
                     name="ageMax"
-                    placeholder={localMaxAge?.toString() || ""}
-                    value={localMaxAge}
-                    onChange={(e) =>
-                      setLocalMaxAge(
-                        Math.max(
-                          localMinAge as number,
-                          Math.min(
-                            parseInt(e.target.value) || (localMaxAge as number),
-                            localMaxAge as number
-                          )
-                        )
-                      )
-                    }
+                    placeholder="Max Age"
+                    value={localMaxAge || ""}
+                    onChange={(e) => {
+                      const value = parseInt(e.target.value) || 0;
+                      if (value >= 0) {
+                        setLocalMaxAge(value);
+                        if (localMinAge !== undefined && value < localMinAge) {
+                          setLocalMinAge(value);
+                        }
+                      }
+                    }}
                     className="p-2 rounded border w-full bg-gray-800 text-white mt-2"
+                    min="0"
                   />
                 </div>
 
