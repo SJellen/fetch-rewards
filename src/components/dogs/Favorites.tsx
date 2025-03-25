@@ -221,6 +221,7 @@ export default function Favorites({
     <div className="fixed inset-0 bg-slate-950 flex items-center justify-center z-50">
       <div className="rounded-lg p-6 w-full mx-auto h-screen overflow-y-auto relative py-20">
         {matchState.dog !== null ? (
+          
           <button
             onClick={() => setMatchState({ dog: null, show: false })}
             className="absolute top-4 right-4 text-white hover:text-gray-700"
@@ -236,7 +237,7 @@ export default function Favorites({
           </button>
         )}
 
-        <h2 className="text-2xl font-bold mb-4 text-white py-10">
+        <h2 className="text-2xl font-bold mb-4 text-white py-10 ">
           {matchState.show ? "Your Perfect Match!" : "Your Favorite Dogs"}
         </h2>
 
@@ -373,12 +374,12 @@ export default function Favorites({
               )}
             </div>
             {favoriteDogs.length > 0 && (
-              <div className="mt-6 flex justify-center">
+               <div className="bg-black p-4 flex justify-end fixed bottom-0 w-full left-1/2 transform -translate-x-1/2 ">
                 <button
                   onClick={handlePerfectMatch}
                   className="bg-[#510359] text-white px-8 py-3 rounded-lg hover:bg-[#510359]/90 transition-colors"
                 >
-                  Find Perfect Match
+                  Find Your Perfect Match
                 </button>
               </div>
             )}
