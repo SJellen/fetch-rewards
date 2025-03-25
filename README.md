@@ -2,20 +2,29 @@
 
 ## 📸 Screenshots
 
-| Screenshot 1       | Screenshot 2       |
-| ------------------ | ------------------ |
-| [Add screenshot 1] | [Add screenshot 2] |
+<div align="center">
+  <div style="display: flex; justify-content: center; gap: 20px; margin: 10px;">
+    <img src="src/assets/1.png" width="100" height="auto" alt="Screenshot 1">
+    <img src="src/assets/2.png" width="300" height="auto" alt="Screenshot 2">
+  </div>
+  
+  <div style="display: flex; justify-content: center; gap: 20px; margin: 10px;">
+    <img src="src/assets/3.png" width="300" height="auto" alt="Screenshot 3">
+    <img src="src/assets/4.png" width="100" height="auto" alt="Screenshot 4">
+  </div>
 
-| Screenshot 3       | Screenshot 4       |
-| ------------------ | ------------------ |
-| [Add screenshot 3] | [Add screenshot 4] |
+  <div style="display: flex; justify-content: center; gap: 20px; margin: 10px;">
+    <img src="src/assets/5.png" width="100" height="auto" alt="Screenshot 5">
+    <img src="src/assets/6.png" width="300" height="auto" alt="Screenshot 6">
+  </div>
+</div>
 
 ## 👤 Author Details
 
-- **Name**: [Your Name]
-- **Email**: [Your Email]
-- **LinkedIn**: [Your LinkedIn Profile]
-- **GitHub**: [Your GitHub Profile]
+- **Name**: Scott Jellen
+- **Website**: Scottjellen.com
+
+- **GitHub**: SJellen
 
 ## 🌐 Live Application
 

@@ -242,7 +242,7 @@ export default function Favorites({
 
         {matchState.show && matchState.dog ? (
           <div className="max-w-5xl mx-auto">
-            <div className="border-2 border-[#ffdf02]/25 p-8 bg-[#510359]/75 text-white shadow-xl rounded-xl">
+            <div className=" p-8 bg-[#510359]/75 text-white shadow-xl border border-[#ffdf02]/25 rounded-xl">
               <div className="flex flex-col lg:flex-row gap-8">
                 <div className="lg:w-1/2">
                   <img
