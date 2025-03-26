@@ -8,10 +8,7 @@ interface LoginProps {
   setFavorites: React.Dispatch<React.SetStateAction<Set<string>>>;
 }
 
-export default function Login({
-  onLoginSuccess,
-}: // setFavorites
-LoginProps) {
+export default function Login({ onLoginSuccess }: LoginProps) {
   const [error, setError] = useState("");
   const [credentials, setCredentials] = useState({ name: "", email: "" });
   const [isLoggedIn, setIsLoggedIn] = useLocalStorage("isLoggedIn", false);

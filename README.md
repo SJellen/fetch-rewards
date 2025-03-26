@@ -20,7 +20,7 @@
 ## 👤 Author Details
 
 - **Name**: Scott Jellen
-- **Website**: [Scottjellen.com](scottjellen.com)
+- **Website**: [Scottjellen.com](https://scottjellen.com/)
 
 - **GitHub**: [SJellen](https://github.com/SJellen)
 
