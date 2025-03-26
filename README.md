@@ -3,32 +3,30 @@
 ## 📸 Screenshots
 
 <div align="center">
-  <div style="display: flex; justify-content: center; gap: 20px; margin: 10px;">
-    <img src="src/assets/1.png" width="100" height="auto" alt="Screenshot 1">
-    <img src="src/assets/2.png" width="300" height="auto" alt="Screenshot 2">
-  </div>
-  
-  <div style="display: flex; justify-content: center; gap: 20px; margin: 10px;">
-    <img src="src/assets/3.png" width="300" height="auto" alt="Screenshot 3">
-    <img src="src/assets/4.png" width="100" height="auto" alt="Screenshot 4">
+
+  <div style="display: flex; flex-direction: column; align-items: center; gap: 20px; margin: 10px;">
+     <img src="src/assets/6.png" width="400" height="auto" alt="Screenshot 6">
+    <img src="src/assets/3.png" width="400" height="auto" alt="Screenshot 3">
+    <img src="src/assets/2.png" width="400" height="auto" alt="Screenshot 2">
   </div>
 
   <div style="display: flex; justify-content: center; gap: 20px; margin: 10px;">
-    <img src="src/assets/5.png" width="100" height="auto" alt="Screenshot 5">
-    <img src="src/assets/6.png" width="300" height="auto" alt="Screenshot 6">
+    <img src="src/assets/5.png" width="200" height="auto" alt="Screenshot 5">
+   <img src="src/assets/4.png" width="200" height="auto" alt="Screenshot 4">
+     <img src="src/assets/1.png" width="200" height="auto" alt="Screenshot 1">
   </div>
 </div>
 
 ## 👤 Author Details
 
 - **Name**: Scott Jellen
-- **Website**: Scottjellen.com
+- **Website**: [Scottjellen.com](scottjellen.com)
 
-- **GitHub**: SJellen
+- **GitHub**: [SJellen](https://github.com/SJellen)
 
 ## 🌐 Live Application
 
-You can view the live application here: [Add your deployed application URL]
+You can view the live application here: [Fetch Connects Live Demo](https://fetch-rewards-lemon.vercel.app/)
 
 This project is a React + TypeScript application built with Vite, implementing a receipt processing system for Fetch Rewards. The application allows users to upload receipts, process them, and view their points.
 
@@ -109,14 +107,3 @@ This project uses ESLint for code linting and follows TypeScript best practices.
 - ESLint for code quality
 - TypeScript for type safety
 - Prettier for code formatting
-
-## 🔍 Review Process
-
-When reviewing the code, please consider:
-
-1. Code quality and readability
-2. Type safety and TypeScript usage
-3. Component reusability
-4. Performance considerations
-5. Error handling
-6. User experience
