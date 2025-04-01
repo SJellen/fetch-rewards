@@ -73,7 +73,7 @@ function App() {
         handleLogout={handleLogout}
       />
 
-      <div className="mt-10 h-screen">
+      <div className="h-[calc(100vh-3rem)]">
         {isLoggedIn ? (
           <Search
             isLoggedIn={isLoggedIn}
@@ -97,15 +97,13 @@ function App() {
             setShowFavorites={setShowFavorites}
           />
         ) : (
-          <div className="mx-auto p-8 mt-10  text-center h-auto flex flex-col items-center">
+          <div className="mx-auto p-8 text-center h-full flex flex-col items-center justify-start pt-20">
             <div className="flex flex-col items-center p-6">
-
-
-            <img src={logo} alt="logo" className="w-10 h-10" />
-            <h1 className="text-2xl font-bold">{getGreeting()}</h1>
-            <p className="text-lg mt-2 leading-relaxed">
-              We are excited to help you find your perfect dog!
-            </p>
+              <img src={logo} alt="logo" className="w-10 h-10" />
+              <h1 className="text-2xl font-bold">{getGreeting()}</h1>
+              <p className="text-lg mt-2 leading-relaxed">
+                We are excited to help you find your perfect dog!
+              </p>
             </div>
             <Login
               onLoginSuccess={handleLoginSuccess}

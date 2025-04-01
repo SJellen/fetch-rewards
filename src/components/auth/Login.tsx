@@ -47,31 +47,36 @@ export default function Login({ onLoginSuccess }: LoginProps) {
 
   if (isLoggedIn) {
     return (
-      <div className="text-center">
-        <h2>We are excited to help you find your perfect dog!</h2>
-        <p>You are already logged in as {userName || "a user"}.</p>
+      <div className="text-center text-white max-w-9xl mx-auto w-full">
+        <h2 className="text-2xl font-bold mb-4">
+          We are excited to help you find your perfect dog!
+        </h2>
+        <p className="text-lg">
+          You are already logged in as{" "}
+          <span className="font-bold">{userName || "a user"}</span>.
+        </p>
       </div>
     );
   }
 
   return (
-    <div className="flex h-screen flex-col text-black">
+    <div className="w-full flex justify-center">
       <form
         onSubmit={handleSubmit}
-        className="flex flex-col gap-8 p-20 justify-between shadow-lg rounded-lg bg-slate-800"
+        className="flex flex-col gap-6 p-8 w-full max-w-md bg-[#510359]/75 shadow-xl border border-[#ffdf02]/25 rounded-xl"
       >
-        <h1 className="text-4xl font-bold mb-8 text-white">
+        <h1 className="text-4xl font-bold text-white text-center">
           fetch<span className="text-[#ffdf02]">Connects</span>
         </h1>
-        <p className="text-white">Please Login</p>
+        <p className="text-white text-center text-lg">Please Login</p>
         <input
           type="text"
           value={credentials.name}
           onChange={(e) =>
             setCredentials({ ...credentials, name: e.target.value })
           }
-          placeholder="Name"
-          className="border border-slate-800 rounded p-2 text-white bg-slate-900"
+          placeholder="Enter your name"
+          className="border border-white/20 rounded-lg p-3 text-white bg-white/10 placeholder-white/50 focus:outline-none focus:border-[#ffdf02]"
         />
         <input
           type="email"
@@ -79,18 +84,14 @@ export default function Login({ onLoginSuccess }: LoginProps) {
           onChange={(e) =>
             setCredentials({ ...credentials, email: e.target.value })
           }
-          placeholder="Email"
-          className="border border-slate-800 rounded p-2 mt-2 text-white bg-slate-900"
+          placeholder="Enter your email"
+          className="border border-white/20 rounded-lg p-3 text-white bg-white/10 placeholder-white/50 focus:outline-none focus:border-[#ffdf02]"
         />
-        {error && (
-          <div className="text-red-500 mt-2" style={{ color: "red" }}>
-            {error}
-          </div>
-        )}
+        {error && <div className="text-red-500 text-center">{error}</div>}
         <button
           type="submit"
           disabled={isLoading}
-          className="bg-blue-500 text-white px-4 py-2 rounded mt-4 flex items-center justify-center gap-2"
+          className="bg-[#510359] text-white px-6 py-3 rounded-lg hover:bg-[#510359]/90 transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {isLoading ? (
             <>
