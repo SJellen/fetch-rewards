@@ -356,18 +356,24 @@ export default function SearchForm({
       className="fixed top-12 flex justify-between items-center bg-black z-4 w-full p-2 max-w-9xl mx-auto left-1/2 transform -translate-x-1/2 px-4"
     >
       <div className="flex items-center justify-between w-full">
-        <select
-          value={breedFilter ?? ""}
-          onChange={handleBreedChange}
-          className="p-2 rounded border bg-gray-800 text-white"
-        >
-          <option value="">All Breeds</option>
-          {breeds.map((breed) => (
-            <option key={breed} value={breed}>
-              {breed}
-            </option>
-          ))}
-        </select>
+        <div className="flex flex-col">
+          <label htmlFor="breed-select" className="text-white mb-1">
+            Select Breed
+          </label>
+          <select
+            id="breed-select"
+            value={breedFilter ?? ""}
+            onChange={handleBreedChange}
+            className="p-2 rounded border bg-gray-800 text-white"
+          >
+            <option value="">All Breeds</option>
+            {breeds.map((breed) => (
+              <option key={breed} value={breed}>
+                {breed}
+              </option>
+            ))}
+          </select>
+        </div>
 
         <div className="relative">
           <button
